@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Another Iceland</string>
+    <string name="login">Log In</string>
+    <string name="map_token">pk.eyJ1IjoiamRyb2lkY29kZXIiLCJhIjoiY2p3dDM4M2xpMGJkbjN5bXVubHgwcGVxMiJ9.H769v7MwzRKhfc-DupjNmA</string>
+    <string name="booking_number">Booking number</string>
+    <string name="password">Password</string>
+    <string name="need_turn_on_gps">GPS is off. Want to enable GPS?</string>
+    <string name="turn_on_gps">Enable GPS</string>
+    <string name="close_label">Close</string>
+    <string name="more">More</string>
+</resources>
