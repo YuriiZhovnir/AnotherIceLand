@@ -166,6 +166,7 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
                         BitmapFactory.decodeFile(point?.image), R.drawable.ic_pin_inactive))
                 markers.put(this.mapboxMap?.addMarker(
                         MarkerOptions()
+                                .setTitle(point?.name)
                                 .position(point.lat?.let { it1 -> point.lng?.let { it2 -> LatLng(it1, it2) } })
                                 .setIcon(icon)), point)
             }
