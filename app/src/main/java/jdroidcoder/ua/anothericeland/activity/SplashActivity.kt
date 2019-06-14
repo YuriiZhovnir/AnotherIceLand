@@ -257,7 +257,7 @@ class SplashActivity : BaseActivity() {
             var dayNumber = 1
             val temp: ArrayList<Point> = ArrayList()
             for (point in it) {
-                if (!point.isHotel) {
+                if (!point.isHotel && point != it.lastOrNull()) {
                     temp.add(point)
                 } else {
                     temp.add(point)
