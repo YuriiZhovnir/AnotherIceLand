@@ -36,6 +36,12 @@ class DetailsFragment : Fragment() {
         Picasso.get().load(File(pointDetails?.image)).into(locationImage)
         locationName?.text = pointDetails?.name
         description?.text = pointDetails?.description
+        if (pointDetails?.isHotel == true) {
+            phones?.visibility = View.VISIBLE
+            phones?.text = pointDetails?.phone
+        } else {
+            phones?.visibility = View.GONE
+        }
         closeButton?.visibility = View.VISIBLE
         shadow?.visibility = View.GONE
     }

@@ -10,4 +10,5 @@
     <string name="more">קרא עוד</string>
     <string name="trip_completed">Trip completed</string>
     <string name="invalid_data">Invalid data</string>
+    <string name="phone">Phone:</string>
 </resources>
