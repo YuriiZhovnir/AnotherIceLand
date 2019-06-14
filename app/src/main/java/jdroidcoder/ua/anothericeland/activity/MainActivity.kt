@@ -16,6 +16,8 @@ class MainActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+//        throw  Exception()
+
         GlobalData?.trip = Util.getTrip(this)
         if (GlobalData.trip != null) {
             startActivity(Intent(this, MapActivity::class.java))

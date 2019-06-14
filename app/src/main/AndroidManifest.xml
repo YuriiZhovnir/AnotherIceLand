@@ -26,8 +26,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity android:name=".activity.MapActivity" />
+
         <activity android:name=".activity.SplashActivity" />
+
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="86874739e14f4e3da18fa769b2a3d3c7ca5b99f9" />
     </application>
 
 </manifest>
