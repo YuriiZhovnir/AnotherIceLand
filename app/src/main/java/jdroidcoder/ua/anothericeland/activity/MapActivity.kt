@@ -31,6 +31,7 @@ import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions
 import com.mapbox.mapboxsdk.location.modes.CameraMode
 import com.mapbox.mapboxsdk.location.modes.RenderMode
+import com.mapbox.services.android.navigation.ui.v5.route.NavigationMapRoute
 import com.squareup.picasso.Picasso
 import jdroidcoder.ua.anothericeland.adapter.PlanAdapter
 import jdroidcoder.ua.anothericeland.fragment.DetailsFragment
@@ -46,6 +47,7 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
     private var locationListener: GPServices? = null
     private lateinit var mapboxMap: MapboxMap
     private var behaviorBottomSheet: BottomSheetBehavior<View>? = null
+    var navigationMapRoute: NavigationMapRoute? = null
 
     companion object {
         var markers: HashMap<Marker, jdroidcoder.ua.anothericeland.network.response.Point> = HashMap()
@@ -145,16 +147,27 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
                 mapboxMap?.locationComponent?.isLocationComponentEnabled = true
             }
             initGpsService()
+            Thread {
+                GlobalData.directionsRoute = Util.loadRoute(this)
+                runOnUiThread {
+                    if (navigationMapRoute != null) {
+                        navigationMapRoute?.updateRouteVisibilityTo(false)
+                    } else {
+                        navigationMapRoute = NavigationMapRoute(mapView, mapboxMap)
+                    }
+                    navigationMapRoute?.addRoute(GlobalData.directionsRoute)
+                }
+            }.start()
         }
         GlobalData.trip?.points?.let {
             for (point in it) {
                 val iconFactory = IconFactory.getInstance(this)
                 val icon = iconFactory.fromBitmap(Util.buildIcon(this,
-                                BitmapFactory.decodeFile(point?.image), R.drawable.ic_pin_inactive))
+                        BitmapFactory.decodeFile(point?.image), R.drawable.ic_pin_inactive))
                 markers.put(this.mapboxMap?.addMarker(
-                                MarkerOptions()
-                                        .position(point.lat?.let { it1 -> point.lng?.let { it2 -> LatLng(it1, it2) } })
-                                        .setIcon(icon)), point)
+                        MarkerOptions()
+                                .position(point.lat?.let { it1 -> point.lng?.let { it2 -> LatLng(it1, it2) } })
+                                .setIcon(icon)), point)
             }
         }
         this.mapboxMap?.setOnMarkerClickListener(this)
@@ -167,7 +180,7 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
         if (temp != null) {
             val iconFactory = IconFactory.getInstance(this)
             val icon = iconFactory.fromBitmap(Util.buildIcon(this,
-                            BitmapFactory.decodeFile(temp.image), R.drawable.ic_pin_inactive))
+                    BitmapFactory.decodeFile(temp.image), R.drawable.ic_pin_inactive))
             GlobalData.selectedMarker?.icon = icon
             GlobalData.selectedMarker = null
         }
@@ -176,7 +189,7 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
         if (temp != null) {
             val iconFactory = IconFactory.getInstance(this)
             val icon = iconFactory.fromBitmap(Util.buildIcon(this,
-                            BitmapFactory.decodeFile(temp.image), R.drawable.ic_pin_active))
+                    BitmapFactory.decodeFile(temp.image), R.drawable.ic_pin_active))
             marker?.icon = icon
             Picasso.get().load(File(temp.image)).into(locationImage)
             locationName?.text = temp.name

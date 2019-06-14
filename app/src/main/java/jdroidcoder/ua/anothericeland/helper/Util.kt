@@ -10,6 +10,10 @@ import jdroidcoder.ua.anothericeland.R
 import jdroidcoder.ua.anothericeland.network.response.Trip
 import java.lang.Exception
 import android.graphics.Bitmap
+import com.mapbox.api.directions.v5.models.DirectionsRoute
+import java.io.IOException
+import java.io.ObjectInputStream
+import java.io.ObjectOutputStream
 
 object Util {
     fun buildIcon(context: Context, bitmap: Bitmap, idRes: Int): Bitmap {
@@ -60,6 +64,34 @@ object Util {
             GsonBuilder().create().fromJson(context?.getSharedPreferences("trip_file", Context.MODE_PRIVATE)?.getString("trip", ""), Trip::class.java)
         } catch (ex: Exception) {
             ex.printStackTrace()
+            null
+        }
+    }
+    fun saveRoute(context: Context, token: DirectionsRoute?) {
+        try {
+            val fos = context.openFileOutput("route_file", Context.MODE_PRIVATE)
+            val os = ObjectOutputStream(fos)
+            os.writeObject(token)
+            os.close()
+            fos.close()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+    }
+
+    fun loadRoute(context: Context): DirectionsRoute? {
+        return try {
+            val fis = context.openFileInput("route_file")
+            val `is` = ObjectInputStream(fis)
+            val tokenModel = `is`.readObject() as DirectionsRoute?
+            `is`.close()
+            fis.close()
+            tokenModel
+        } catch (e: IOException) {
+            e.printStackTrace()
+            null
+        } catch (e: ClassNotFoundException) {
+            e.printStackTrace()
             null
         }
     }

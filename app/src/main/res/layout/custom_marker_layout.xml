@@ -26,6 +26,6 @@
             android:layout_marginTop="3.6dp"
             android:layout_marginEnd="3.6dp"
             android:layout_marginBottom="9.3dp"
-            android:scaleType="fitXY" />
+            android:scaleType="centerCrop" />
     </RelativeLayout>
 </RelativeLayout>

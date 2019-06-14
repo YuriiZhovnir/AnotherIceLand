@@ -50,7 +50,6 @@
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp"
                 android:singleLine="true"
-                android:text="5-410044"
                 android:textColor="@android:color/white"
                 android:textColorHint="@android:color/white"
                 android:textSize="12sp" />
@@ -80,7 +79,6 @@
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp"
                 android:singleLine="true"
-                android:text="qwerqwer"
                 android:textColor="@android:color/white"
                 android:textColorHint="@android:color/white"
                 android:textSize="12sp" />
