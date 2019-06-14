@@ -16,7 +16,8 @@
         android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true">
         <activity android:name="jdroidcoder.ua.anothericeland.activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -9,9 +9,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="-30dp"
-        app:mapbox_cameraTargetLat="50.619736"
-        app:mapbox_cameraTargetLng="26.251301"
-        app:mapbox_cameraZoom="12"
+        app:mapbox_cameraTargetLat="64.128288"
+        app:mapbox_cameraTargetLng="-18.827774"
+        app:mapbox_cameraZoom="4.5"
         app:mapbox_uiCompass="false"
         app:mapbox_uiRotateGestures="false" />
 
