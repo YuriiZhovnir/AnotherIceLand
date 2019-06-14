@@ -65,15 +65,15 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
         GlobalData?.trip?.days?.let {
             for (day in it) {
                 points.add(
-                    jdroidcoder.ua.anothericeland.network.response.Point(
-                        3, day.name,
-                        "", "", "", null, null, false,
-                        if (day.name == "Day 1") {
-                            true
-                        } else {
-                            day.isDone
-                        }
-                    )
+                        jdroidcoder.ua.anothericeland.network.response.Point(
+                                3, day.name,
+                                "", "", "", null, null, false,
+                                if (day.name == "Day 1") {
+                                    true
+                                } else {
+                                    day.isDone
+                                }
+                        )
                 )
                 points.addAll(day.points)
             }
@@ -93,7 +93,6 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
             }
         })
         gpsDetector()
-        initGpsService()
 
         val currentItem = GlobalData?.trip?.points?.firstOrNull { point -> !point?.isDone && point?.typeId != 3 }
         if (currentItem == null) {
@@ -138,35 +137,24 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
         this.mapboxMap = mapboxMap
         this.mapboxMap?.setStyle(Style.MAPBOX_STREETS) { style ->
             mapboxMap?.locationComponent?.activateLocationComponent(
-                LocationComponentActivationOptions.builder(
-                    this@MapActivity,
-                    style
-                ).build()
-            )
+                    LocationComponentActivationOptions.builder(this@MapActivity, style).build())
             mapboxMap?.locationComponent?.cameraMode = CameraMode.TRACKING
             mapboxMap?.locationComponent?.renderMode = RenderMode.COMPASS
             if (ActivityCompat.checkSelfPermission(this@MapActivity, android.Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED
-            ) {
+                    == PackageManager.PERMISSION_GRANTED) {
                 mapboxMap?.locationComponent?.isLocationComponentEnabled = true
             }
+            initGpsService()
         }
         GlobalData.trip?.points?.let {
             for (point in it) {
                 val iconFactory = IconFactory.getInstance(this)
-                val icon = iconFactory.fromBitmap(
-                    Util.buildIcon(
-                        this,
-                        BitmapFactory.decodeFile(point?.image), R.drawable.ic_pin_inactive
-                    )
-                )
-                markers.put(
-                    this.mapboxMap?.addMarker(
-                        MarkerOptions()
-                            .position(point.lat?.let { it1 -> point.lng?.let { it2 -> LatLng(it1, it2) } })
-                            .setIcon(icon)
-                    ), point
-                )
+                val icon = iconFactory.fromBitmap(Util.buildIcon(this,
+                                BitmapFactory.decodeFile(point?.image), R.drawable.ic_pin_inactive))
+                markers.put(this.mapboxMap?.addMarker(
+                                MarkerOptions()
+                                        .position(point.lat?.let { it1 -> point.lng?.let { it2 -> LatLng(it1, it2) } })
+                                        .setIcon(icon)), point)
             }
         }
         this.mapboxMap?.setOnMarkerClickListener(this)
@@ -178,12 +166,8 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
         var temp = markers?.get(GlobalData.selectedMarker)
         if (temp != null) {
             val iconFactory = IconFactory.getInstance(this)
-            val icon = iconFactory.fromBitmap(
-                Util.buildIcon(
-                    this,
-                    BitmapFactory.decodeFile(temp.image), R.drawable.ic_pin_inactive
-                )
-            )
+            val icon = iconFactory.fromBitmap(Util.buildIcon(this,
+                            BitmapFactory.decodeFile(temp.image), R.drawable.ic_pin_inactive))
             GlobalData.selectedMarker?.icon = icon
             GlobalData.selectedMarker = null
         }
@@ -191,12 +175,8 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
         GlobalData.selectedMarker = marker
         if (temp != null) {
             val iconFactory = IconFactory.getInstance(this)
-            val icon = iconFactory.fromBitmap(
-                Util.buildIcon(
-                    this,
-                    BitmapFactory.decodeFile(temp.image), R.drawable.ic_pin_active
-                )
-            )
+            val icon = iconFactory.fromBitmap(Util.buildIcon(this,
+                            BitmapFactory.decodeFile(temp.image), R.drawable.ic_pin_active))
             marker?.icon = icon
             Picasso.get().load(File(temp.image)).into(locationImage)
             locationName?.text = temp.name
@@ -215,12 +195,8 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
         val temp = markers?.get(GlobalData.selectedMarker)
         if (temp != null) {
             val iconFactory = IconFactory.getInstance(this)
-            val icon = iconFactory.fromBitmap(
-                Util.buildIcon(
-                    this,
-                    BitmapFactory.decodeFile(temp.image), R.drawable.ic_pin_inactive
-                )
-            )
+            val icon = iconFactory.fromBitmap(Util.buildIcon(this,
+                    BitmapFactory.decodeFile(temp.image), R.drawable.ic_pin_inactive))
             GlobalData.selectedMarker?.icon = icon
             GlobalData.selectedMarker = null
         }
@@ -237,10 +213,10 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
         if (supportFragmentManager?.findFragmentByTag(DetailsFragment.TAG) == null) {
             val fragment = DetailsFragment.newInstance()
             supportFragmentManager?.beginTransaction()
-                ?.setCustomAnimations(R.anim.enter_to_up, 0, 0, R.anim.enter_to_down)
-                ?.replace(android.R.id.content, fragment, DetailsFragment.TAG)
-                ?.addToBackStack(fragment::class.java.name)
-                ?.commit()
+                    ?.setCustomAnimations(R.anim.enter_to_up, 0, 0, R.anim.enter_to_down)
+                    ?.replace(android.R.id.content, fragment, DetailsFragment.TAG)
+                    ?.addToBackStack(fragment::class.java.name)
+                    ?.commit()
         }
     }
 
@@ -281,19 +257,12 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            if (ActivityCompat.checkSelfPermission(
-                    this,
-                    android.Manifest.permission.ACCESS_FINE_LOCATION
-                ) == PackageManager.PERMISSION_GRANTED
-            ) {
+        if (ActivityCompat.checkSelfPermission(this,
+                        Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this,
+                        Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.checkSelfPermission(this,
+                            android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 locationListener?.initGoogleClient()
                 mapboxMap?.locationComponent?.isLocationComponentEnabled = true
             }

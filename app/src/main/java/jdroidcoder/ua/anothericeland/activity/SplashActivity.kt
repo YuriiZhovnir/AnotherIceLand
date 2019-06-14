@@ -19,6 +19,8 @@ import kotlinx.android.synthetic.main.activity_splash.*
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.os.AsyncTask
 import android.os.Environment
 import com.squareup.picasso.Picasso
 import com.squareup.picasso.Target
@@ -31,6 +33,8 @@ import java.io.FileOutputStream
 import java.util.*
 import java.io.FileNotFoundException
 import java.io.IOException
+import java.net.HttpURLConnection
+import java.net.URL
 import java.text.SimpleDateFormat
 import kotlin.collections.ArrayList
 
@@ -54,13 +58,18 @@ class SplashActivity : BaseActivity() {
 
     private fun checkPermission() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-                == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+            == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
             download()
         } else {
-            ActivityCompat.requestPermissions(this,
-                    arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                    43)
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                43
+            )
         }
     }
 
@@ -77,76 +86,124 @@ class SplashActivity : BaseActivity() {
         spinner?.background?.let { showSpinner(it) }
         val apiService: Api? = ApiServiceInitializer.init("http://18.184.47.87/api/")?.create(Api::class.java)
         apiService?.getTrip(GlobalData?.number, GlobalData?.password)
-                ?.subscribeOn(Schedulers.io())
-                ?.observeOn(AndroidSchedulers.mainThread())
-                ?.unsubscribeOn(Schedulers.io())
-                ?.subscribe(object : RetrofitSubscriber<Trip>() {
-                    override fun onNext(response: Trip) {
-                        trip = response
-                        if (response?.image?.isNullOrEmpty() == false) {
-                            response?.image?.let {
-                                images.add(it)
-                            }
-                        }
-                        response?.points?.forEach {
-                            if (it.image?.isNullOrEmpty() == false) {
-                                it.image?.let { it1 ->
-                                    images.add(it1)
-                                }
-                            }
-                            it.isHotel = it.typeId?.let { it1 -> Util.isHotel(it1) } ?: false
-                        }
-                        for (image in images) {
-                            downloadImage(image)
+            ?.subscribeOn(Schedulers.io())
+            ?.observeOn(AndroidSchedulers.mainThread())
+            ?.unsubscribeOn(Schedulers.io())
+            ?.subscribe(object : RetrofitSubscriber<Trip>() {
+                override fun onNext(response: Trip) {
+                    trip = response
+                    if (response?.image?.isNullOrEmpty() == false) {
+                        response?.image?.let {
+                            images.add(it)
                         }
                     }
+                    response?.points?.forEach {
+                        if (it.image?.isNullOrEmpty() == false) {
+                            it.image?.let { it1 ->
+                                images.add(it1)
+                            }
+                        }
+                        it.isHotel = it.typeId?.let { it1 -> Util.isHotel(it1) } ?: false
+                    }
+                    for (image in images) {
+                        println("image")
+//                        downloadImage(image)
+                        GetBitmapFromURLAsync().execute(image)
+                    }
+                }
 
-                    override fun onError(e: Throwable) {
-                        super.onError(e)
-                        setResult(Activity.RESULT_CANCELED)
-                        finish()
-                    }
-                })
+                override fun onError(e: Throwable) {
+                    super.onError(e)
+                    setResult(Activity.RESULT_CANCELED)
+                    finish()
+                }
+            })
     }
 
-    private fun downloadImage(imageUrl: String) {
-        Picasso.get()
-                .load(imageUrl)
-                .into(object : Target {
-                    override fun onBitmapFailed(e: java.lang.Exception?, errorDrawable: Drawable?) {
-                        imageDownloadedCount++
+    private inner class GetBitmapFromURLAsync : AsyncTask<String, Void, Bitmap?>() {
+        var imageUrl = ""
+        override fun doInBackground(vararg params: String): Bitmap? {
+            imageUrl = params[0]
+            return getBitmapFromURL(params[0])
+        }
+
+        override fun onPostExecute(bitmap: Bitmap?) {
+            runOnUiThread {
+                try {
+                    val pictureFile = getOutputMediaFile()
+                    try {
+                        val fos = FileOutputStream(pictureFile)
+                        bitmap?.compress(Bitmap.CompressFormat.PNG, 90, fos)
+                        fos.close()
+                        imageDownloaded(imageUrl, pictureFile?.absolutePath!!)
+                    } catch (e: FileNotFoundException) {
+                        e.printStackTrace()
+                        imageDownloaded("", "")
+                    } catch (e: IOException) {
+                        e.printStackTrace()
                         imageDownloaded("", "")
                     }
-
-                    override fun onBitmapLoaded(bitmap: Bitmap, from: Picasso.LoadedFrom) {
-                        try {
-                            val pictureFile = getOutputMediaFile() ?: return
-                            try {
-                                val fos = FileOutputStream(pictureFile)
-                                bitmap.compress(Bitmap.CompressFormat.PNG, 90, fos)
-                                fos.close()
-                                imageDownloaded(imageUrl, pictureFile?.absolutePath)
-                            } catch (e: FileNotFoundException) {
-                                imageDownloadedCount++
-                                imageDownloaded("", "")
-                            } catch (e: IOException) {
-                                imageDownloadedCount++
-                                imageDownloaded("", "")
-                            }
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                            imageDownloadedCount++
-                            imageDownloaded("", "")
-                        }
-                    }
-
-                    override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
-
-                    }
-                })
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    imageDownloaded("", "")
+                }
+            }
+        }
     }
 
+    fun getBitmapFromURL(src: String): Bitmap? {
+        return try {
+            val url = URL(src)
+            val connection = url.openConnection() as HttpURLConnection
+            connection.doInput = true
+            connection.connect()
+            val input = connection.inputStream
+            BitmapFactory.decodeStream(input)
+        } catch (e: IOException) {
+            e.printStackTrace()
+            null
+        }
+
+    }
+
+//    private fun downloadImage(imageUrl: String) {
+//        Picasso.get()
+//            .load(imageUrl)
+//            .into(object : Target {
+//                override fun onBitmapFailed(e: java.lang.Exception?, errorDrawable: Drawable?) {
+//                    e?.printStackTrace()
+//                    imageDownloaded("", "")
+//                }
+//
+//                override fun onBitmapLoaded(bitmap: Bitmap, from: Picasso.LoadedFrom) {
+//                    try {
+//                        val pictureFile = getOutputMediaFile() ?: return
+//                        try {
+//                            val fos = FileOutputStream(pictureFile)
+//                            bitmap.compress(Bitmap.CompressFormat.PNG, 90, fos)
+//                            fos.close()
+//                            imageDownloaded(imageUrl, pictureFile?.absolutePath)
+//                        } catch (e: FileNotFoundException) {
+//                            e.printStackTrace()
+//                            imageDownloaded("", "")
+//                        } catch (e: IOException) {
+//                            e.printStackTrace()
+//                            imageDownloaded("", "")
+//                        }
+//                    } catch (e: Exception) {
+//                        e.printStackTrace()
+//                        imageDownloaded("", "")
+//                    }
+//                }
+//
+//                override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
+//
+//                }
+//            })
+//    }
+
     private fun imageDownloaded(imageUrl: String, localPath: String) {
+        println("downloaded")
         if (trip.image == imageUrl) {
             trip.image = localPath
         } else {
@@ -188,10 +245,12 @@ class SplashActivity : BaseActivity() {
     }
 
     private fun getOutputMediaFile(): File? {
-        val mediaStorageDir = File(Environment.getExternalStorageDirectory().toString()
-                + "/Android/data/"
-                + applicationContext.packageName
-                + "/Files")
+        val mediaStorageDir = File(
+            Environment.getExternalStorageDirectory().toString()
+                    + "/Android/data/"
+                    + applicationContext.packageName
+                    + "/Files"
+        )
         if (!mediaStorageDir.exists()) {
             if (!mediaStorageDir.mkdirs()) {
                 return null
@@ -208,16 +267,18 @@ class SplashActivity : BaseActivity() {
         try {
             if (frameAnimation == null) {
                 window?.setFlags(
-                        WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-                        WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
                 )
                 frameAnimation = drawable as AnimationDrawable
                 frameAnimation?.start()
             }
         } catch (ex: Exception) {
             ex.printStackTrace()
-            window?.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+            window?.setFlags(
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+            )
         }
     }
 

@@ -8,9 +8,8 @@ import android.widget.ImageView
 import com.google.gson.GsonBuilder
 import jdroidcoder.ua.anothericeland.R
 import jdroidcoder.ua.anothericeland.network.response.Trip
-import okhttp3.ResponseBody
-import java.io.*
 import java.lang.Exception
+import android.graphics.Bitmap
 
 object Util {
     fun buildIcon(context: Context, bitmap: Bitmap, idRes: Int): Bitmap {
