@@ -5,7 +5,12 @@ import android.graphics.*
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
+import com.google.gson.GsonBuilder
 import jdroidcoder.ua.anothericeland.R
+import jdroidcoder.ua.anothericeland.network.response.Trip
+import okhttp3.ResponseBody
+import java.io.*
+import java.lang.Exception
 
 object Util {
     fun buildIcon(context: Context, bitmap: Bitmap, idRes: Int): Bitmap {
@@ -39,5 +44,24 @@ object Util {
         paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_IN)
         canvas.drawBitmap(bitmap, rect, rect, paint)
         return output
+    }
+
+    fun isHotel(type: Int): Boolean {
+        return type == 2
+    }
+
+    fun saveTrip(context: Context, trip: Trip) {
+        context?.getSharedPreferences("trip_file", Context.MODE_PRIVATE)?.edit()
+                ?.putString("trip", GsonBuilder().create().toJson(trip))
+                ?.apply()
+    }
+
+    fun getTrip(context: Context): Trip? {
+        return try {
+            GsonBuilder().create().fromJson(context?.getSharedPreferences("trip_file", Context.MODE_PRIVATE)?.getString("trip", ""), Trip::class.java)
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+            null
+        }
     }
 }

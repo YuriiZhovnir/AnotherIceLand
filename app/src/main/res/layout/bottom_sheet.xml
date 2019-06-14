@@ -30,13 +30,13 @@
             android:gravity="center">
 
             <TextView
+                android:id="@+id/bottomSheetTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:drawableTop="@drawable/ic_decore_line"
                 android:drawablePadding="9dp"
                 android:fontFamily="@font/montserrat_medium"
                 android:gravity="center"
-                android:text="Park Skaftaffel"
                 android:textColor="#333333" />
         </LinearLayout>
 

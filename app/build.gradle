@@ -48,4 +48,13 @@ dependencies {
     implementation 'com.google.android.gms:play-services-gcm:16.0.0'
     implementation 'com.google.android.gms:play-services-location:16.0.0'
     implementation 'com.google.android.gms:play-services-maps:16.1.0'
+    implementation 'com.github.JDroidCoder:apiservice:1.0.2'
+    implementation 'com.squareup.retrofit2:retrofit:2.4.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
+    implementation 'io.reactivex:rxandroid:1.2.0'
+    implementation 'io.reactivex:rxjava:1.1.6'
+    implementation 'com.squareup.retrofit2:adapter-rxjava:2.0.1'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.10.0'
+    implementation 'com.squareup.okhttp3:okhttp:3.11.0'
+    implementation 'com.squareup.picasso:picasso:2.71828'
 }

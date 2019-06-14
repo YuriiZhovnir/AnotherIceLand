@@ -7,5 +7,7 @@
     <string name="need_turn_on_gps">GPS is off. Want to enable GPS?</string>
     <string name="turn_on_gps">Enable GPS</string>
     <string name="close_label">Close</string>
-    <string name="more">More</string>
+    <string name="more">קרא עוד</string>
+    <string name="trip_completed">Trip completed</string>
+    <string name="invalid_data">Invalid data</string>
 </resources>

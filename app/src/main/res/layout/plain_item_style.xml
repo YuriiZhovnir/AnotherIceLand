@@ -9,15 +9,15 @@
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:drawableStart="@drawable/ic_circle_empty"
+        android:drawableStart="@drawable/ic_circle_day_empty"
         android:drawablePadding="16dp"
         android:textSize="14sp" />
 
     <ImageView
         android:id="@+id/bottomLine"
         android:layout_width="1dp"
+        android:layout_height="30dp"
         android:layout_marginStart="7.5dp"
-        android:layout_marginTop="-4dp"
-        android:layout_height="23dp"
+        android:layout_marginTop="-3dp"
         android:src="@color/blue" />
 </LinearLayout>

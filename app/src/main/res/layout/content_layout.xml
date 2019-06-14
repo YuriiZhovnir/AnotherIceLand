@@ -62,7 +62,6 @@
                         android:ellipsize="end"
                         android:fontFamily="@font/montserrat_medium"
                         android:singleLine="true"
-                        android:text="Park Skaftaffel"
                         android:textColor="#333333"
                         android:textSize="14sp" />
 
@@ -86,7 +85,6 @@
                         android:lineSpacingExtra="1dp"
                         android:lineSpacingMultiplier="1.2"
                         android:maxLines="4"
-                        android:text="Park SkaftaffelPark SkaftaffelPark SkaftaffelPark SkaftaffelPark SkaftaffelPark SkaftaffelPark SkaftaffelPark SkaftaffelPark SkaftaffelPark SkaftaffelPark SkaftaffelPark Skaftaffel"
                         android:textColor="#333333"
                         android:textSize="12sp" />
                 </LinearLayout>
