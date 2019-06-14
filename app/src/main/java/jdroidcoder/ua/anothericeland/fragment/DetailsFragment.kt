@@ -33,7 +33,20 @@ class DetailsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         unbinder = ButterKnife.bind(this, view)
         val pointDetails = MapActivity.markers?.get(GlobalData?.selectedMarker)
-        Picasso.get().load(File(pointDetails?.image)).into(locationImage)
+        GlobalData?.trip?.days?.let {
+            for (d in it) {
+                for (p in d.points) {
+                    if (p == pointDetails) {
+                        title?.text = d.name
+                    }
+                }
+            }
+        }
+        try {
+            Picasso.get().load(File(pointDetails?.image)).into(locationImage)
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+        }
         locationName?.text = pointDetails?.name
         description?.text = pointDetails?.description
         if (pointDetails?.isHotel == true) {

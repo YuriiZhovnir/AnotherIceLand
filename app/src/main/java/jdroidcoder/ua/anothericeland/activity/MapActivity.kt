@@ -150,11 +150,11 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
             Thread {
                 GlobalData.directionsRoute = Util.loadRoute(this)
                 runOnUiThread {
-                    if (navigationMapRoute != null) {
-                        navigationMapRoute?.updateRouteVisibilityTo(false)
-                    } else {
+//                    if (navigationMapRoute != null) {
+//                        navigationMapRoute?.updateRouteVisibilityTo(false)
+//                    } else {
                         navigationMapRoute = NavigationMapRoute(mapView, mapboxMap)
-                    }
+//                    }
                     navigationMapRoute?.addRoute(GlobalData.directionsRoute)
                 }
             }.start()

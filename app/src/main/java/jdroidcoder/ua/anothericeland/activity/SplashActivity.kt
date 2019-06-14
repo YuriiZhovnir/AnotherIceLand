@@ -110,9 +110,10 @@ class SplashActivity : BaseActivity() {
                             }
                             it.isHotel = it.typeId?.let { it1 -> Util.isHotel(it1) } ?: false
                         }
-                        for (image in images) {
-                            GetBitmapFromURLAsync().execute(image)
-                        }
+//                        for (image in images) {
+                        if (!images?.isEmpty())
+                            GetBitmapFromURLAsync().execute(images?.get(0))
+//                        }
                     }
 
                     override fun onError(e: Throwable) {
@@ -127,7 +128,12 @@ class SplashActivity : BaseActivity() {
         var imageUrl = ""
         override fun doInBackground(vararg params: String): Bitmap? {
             imageUrl = params[0]
-            return getBitmapFromURL(params[0])
+            return try {
+                getBitmapFromURL(params[0])
+            } catch (ex: Exception) {
+                ex.printStackTrace()
+                null
+            }
         }
 
         override fun onPostExecute(bitmap: Bitmap?) {
@@ -166,7 +172,6 @@ class SplashActivity : BaseActivity() {
             e.printStackTrace()
             null
         }
-
     }
 
     private fun imageDownloaded(imageUrl: String, localPath: String) {
@@ -185,6 +190,8 @@ class SplashActivity : BaseActivity() {
             Util.saveTrip(this, trip)
             GlobalData.trip = trip
             getRoute()
+        } else {
+            GetBitmapFromURLAsync().execute(images?.get(imageDownloadedCount))
         }
     }
 

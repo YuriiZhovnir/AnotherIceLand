@@ -12,88 +12,119 @@
         android:scaleType="centerCrop"
         android:src="@drawable/ic_login_background" />
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="64dp"
-        android:src="@drawable/ic_logo" />
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginStart="30dp"
-        android:layout_marginEnd="30dp"
-        android:orientation="vertical">
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="42dp"
-            android:layout_marginBottom="19dp">
+            android:layout_height="match_parent">
 
-            <com.github.mmin18.widget.RealtimeBlurView
+            <!--<RelativeLayout-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:layout_above="@id/login_container"-->
+            <!--android:layout_centerHorizontal="true">-->
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="64dp"
+                android:src="@drawable/ic_logo" />
+            <!--</RelativeLayout>-->
+
+            <!--<LinearLayout-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_alignParentBottom="true"-->
+            <!--android:layout_marginStart="30dp"-->
+            <!--android:layout_marginEnd="30dp"-->
+            <!--android:orientation="vertical">-->
+
+            <RelativeLayout
+                android:id="@+id/login_container"
                 android:layout_width="match_parent"
                 android:layout_height="42dp"
-                app:realtimeBlurRadius="10dp"
-                app:realtimeOverlayColor="#64333333" />
+                android:layout_above="@id/password_container"
+                android:layout_marginStart="30dp"
+                android:layout_marginEnd="30dp"
+                android:layout_marginBottom="19dp">
 
-            <EditText
-                android:id="@+id/number"
+                <com.github.mmin18.widget.RealtimeBlurView
+                    android:layout_width="match_parent"
+                    android:layout_height="42dp"
+                    app:realtimeBlurRadius="10dp"
+                    app:realtimeOverlayColor="#64333333" />
+
+                <EditText
+                    android:id="@+id/number"
+                    android:layout_width="match_parent"
+                    android:layout_height="42dp"
+                    android:background="@drawable/ic_white_border"
+                    android:fontFamily="@font/montserrat_regular"
+                    android:gravity="bottom"
+                    android:hint="@string/booking_number"
+                    android:inputType="textVisiblePassword"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    android:paddingBottom="12dp"
+                    android:singleLine="true"
+                    android:textColor="@android:color/white"
+                    android:textColorHint="@android:color/white"
+                    android:textSize="12sp" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/password_container"
                 android:layout_width="match_parent"
                 android:layout_height="42dp"
-                android:background="@drawable/ic_white_border"
+                android:layout_above="@id/loginButton"
+                android:layout_marginStart="30dp"
+                android:layout_marginEnd="30dp"
+                android:layout_marginBottom="61dp">
+
+                <com.github.mmin18.widget.RealtimeBlurView
+                    android:layout_width="match_parent"
+                    android:layout_height="42dp"
+                    app:realtimeBlurRadius="10dp"
+                    app:realtimeOverlayColor="#64333333" />
+
+                <EditText
+                    android:id="@+id/password"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_centerInParent="true"
+                    android:background="@drawable/ic_white_border"
+                    android:fontFamily="@font/montserrat_regular"
+                    android:gravity="bottom"
+                    android:hint="@string/password"
+                    android:inputType="textPassword"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    android:paddingBottom="12dp"
+                    android:singleLine="true"
+                    android:textColor="@android:color/white"
+                    android:textColorHint="@android:color/white"
+                    android:textSize="12sp" />
+            </RelativeLayout>
+
+            <Button
+                android:id="@+id/loginButton"
+                android:layout_width="match_parent"
+                android:layout_height="42dp"
+                android:layout_alignParentBottom="true"
+                android:layout_marginStart="30dp"
+                android:layout_marginEnd="30dp"
+                android:layout_marginBottom="54dp"
+                android:background="@android:color/white"
                 android:fontFamily="@font/montserrat_regular"
-                android:gravity="center_vertical"
-                android:hint="@string/booking_number"
-                android:inputType="textVisiblePassword"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                android:singleLine="true"
-                android:textColor="@android:color/white"
-                android:textColorHint="@android:color/white"
+                android:foreground="?attr/selectableItemBackground"
+                android:text="@string/login"
+                android:textColor="@color/blue"
                 android:textSize="12sp" />
+            <!--</LinearLayout>-->
         </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="42dp"
-            android:layout_marginBottom="61dp">
-
-            <com.github.mmin18.widget.RealtimeBlurView
-                android:layout_width="match_parent"
-                android:layout_height="42dp"
-                app:realtimeBlurRadius="10dp"
-                app:realtimeOverlayColor="#64333333" />
-
-            <EditText
-                android:id="@+id/password"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_centerInParent="true"
-                android:background="@drawable/ic_white_border"
-                android:fontFamily="@font/montserrat_regular"
-                android:gravity="center_vertical"
-                android:hint="@string/password"
-                android:inputType="textPassword"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                android:singleLine="true"
-                android:textColor="@android:color/white"
-                android:textColorHint="@android:color/white"
-                android:textSize="12sp" />
-        </RelativeLayout>
-
-        <Button
-            android:id="@+id/loginButton"
-            android:layout_width="match_parent"
-            android:layout_height="42dp"
-            android:layout_marginBottom="54dp"
-            android:background="@android:color/white"
-            android:fontFamily="@font/montserrat_regular"
-            android:foreground="?attr/selectableItemBackground"
-            android:text="@string/login"
-            android:textColor="@color/blue"
-            android:textSize="12sp" />
-    </LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
 </RelativeLayout>

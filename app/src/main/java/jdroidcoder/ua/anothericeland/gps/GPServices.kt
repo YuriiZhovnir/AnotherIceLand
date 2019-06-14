@@ -16,6 +16,7 @@ import android.provider.Settings
 import android.support.v7.app.AlertDialog
 import com.google.android.gms.location.*
 import jdroidcoder.ua.anothericeland.R
+import java.lang.Exception
 
 class GPServices(private var context: AppCompatActivity) : GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
@@ -58,14 +59,18 @@ class GPServices(private var context: AppCompatActivity) : GoogleApiClient.Conne
     }
 
     private fun displayNoLocationProviderDialog() {
-        AlertDialog.Builder(context)
-                .setMessage(context?.resources?.getString(R.string.need_turn_on_gps))
-                .setPositiveButton(context?.resources?.getString(R.string.turn_on_gps)) { dialog, which ->
-                    context.startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
-                    dialog?.dismiss()
-                }.setNegativeButton(context?.resources?.getString(R.string.close_label)) { dialog, which ->
-                    dialog?.dismiss()
-                }.show()
+        try {
+            AlertDialog.Builder(context)
+                    .setMessage(context?.resources?.getString(R.string.need_turn_on_gps))
+                    .setPositiveButton(context?.resources?.getString(R.string.turn_on_gps)) { dialog, which ->
+                        context.startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+                        dialog?.dismiss()
+                    }.setNegativeButton(context?.resources?.getString(R.string.close_label)) { dialog, which ->
+                        dialog?.dismiss()
+                    }.show()
+        }catch (ex:Exception){
+            ex.printStackTrace()
+        }
     }
 
     fun alertAboutGPS() {
