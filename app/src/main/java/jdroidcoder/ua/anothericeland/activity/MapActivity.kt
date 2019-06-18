@@ -229,6 +229,7 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
                         BitmapFactory.decodeFile(temp.image), R.drawable.ic_pin_inactive))
             } catch (ex: Exception) {
                 ex.printStackTrace()
+                null
             }
             GlobalData.selectedMarker?.icon = icon
             GlobalData.selectedMarker = null
