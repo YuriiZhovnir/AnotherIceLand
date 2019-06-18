@@ -156,6 +156,7 @@ class SplashActivity : BaseActivity() {
                     e.printStackTrace()
                     imageDownloaded("", "")
                 }
+                imageUrl = ""
             }
         }
     }

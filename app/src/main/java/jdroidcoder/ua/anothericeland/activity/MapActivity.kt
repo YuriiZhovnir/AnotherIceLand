@@ -150,10 +150,10 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
             Thread {
                 GlobalData.directionsRoute = Util.loadRoute(this)
                 runOnUiThread {
-//                    if (navigationMapRoute != null) {
+                    //                    if (navigationMapRoute != null) {
 //                        navigationMapRoute?.updateRouteVisibilityTo(false)
 //                    } else {
-                        navigationMapRoute = NavigationMapRoute(mapView, mapboxMap)
+                    navigationMapRoute = NavigationMapRoute(mapView, mapboxMap)
 //                    }
                     navigationMapRoute?.addRoute(GlobalData.directionsRoute)
                 }
@@ -162,11 +162,15 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
         GlobalData.trip?.points?.let {
             for (point in it) {
                 val iconFactory = IconFactory.getInstance(this)
-                val icon = iconFactory.fromBitmap(Util.buildIcon(this,
-                        BitmapFactory.decodeFile(point?.image), R.drawable.ic_pin_inactive))
+                val icon = try {
+                    iconFactory.fromBitmap(Util.buildIcon(this,
+                            BitmapFactory.decodeFile(point?.image), R.drawable.ic_pin_inactive))
+                } catch (ex: Exception) {
+                    ex.printStackTrace()
+                    null
+                }
                 markers.put(this.mapboxMap?.addMarker(
                         MarkerOptions()
-                                .setTitle(point?.name)
                                 .position(point.lat?.let { it1 -> point.lng?.let { it2 -> LatLng(it1, it2) } })
                                 .setIcon(icon)), point)
             }
@@ -180,8 +184,13 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
         var temp = markers?.get(GlobalData.selectedMarker)
         if (temp != null) {
             val iconFactory = IconFactory.getInstance(this)
-            val icon = iconFactory.fromBitmap(Util.buildIcon(this,
-                    BitmapFactory.decodeFile(temp.image), R.drawable.ic_pin_inactive))
+            val icon = try {
+                iconFactory.fromBitmap(Util.buildIcon(this,
+                        BitmapFactory.decodeFile(temp.image), R.drawable.ic_pin_inactive))
+            } catch (ex: Exception) {
+                ex.printStackTrace()
+                null
+            }
             GlobalData.selectedMarker?.icon = icon
             GlobalData.selectedMarker = null
         }
@@ -189,10 +198,16 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
         GlobalData.selectedMarker = marker
         if (temp != null) {
             val iconFactory = IconFactory.getInstance(this)
-            val icon = iconFactory.fromBitmap(Util.buildIcon(this,
-                    BitmapFactory.decodeFile(temp.image), R.drawable.ic_pin_active))
+            val icon = try {
+                iconFactory.fromBitmap(Util.buildIcon(this,
+                        BitmapFactory.decodeFile(temp.image), R.drawable.ic_pin_active))
+            } catch (ex: Exception) {
+                ex.printStackTrace()
+                null
+            }
             marker?.icon = icon
-            Picasso.get().load(File(temp.image)).into(locationImage)
+            if (temp.image?.isNotEmpty() == false)
+                Picasso.get().load(File(temp.image)).into(locationImage)
             locationName?.text = temp.name
             locationShortDescription?.text = temp.description
         }
@@ -209,8 +224,12 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
         val temp = markers?.get(GlobalData.selectedMarker)
         if (temp != null) {
             val iconFactory = IconFactory.getInstance(this)
-            val icon = iconFactory.fromBitmap(Util.buildIcon(this,
-                    BitmapFactory.decodeFile(temp.image), R.drawable.ic_pin_inactive))
+            val icon = try {
+                iconFactory.fromBitmap(Util.buildIcon(this,
+                        BitmapFactory.decodeFile(temp.image), R.drawable.ic_pin_inactive))
+            } catch (ex: Exception) {
+                ex.printStackTrace()
+            }
             GlobalData.selectedMarker?.icon = icon
             GlobalData.selectedMarker = null
         }
