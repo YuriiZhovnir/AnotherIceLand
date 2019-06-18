@@ -111,8 +111,11 @@ class SplashActivity : BaseActivity() {
                             it.isHotel = it.typeId?.let { it1 -> Util.isHotel(it1) } ?: false
                         }
 //                        for (image in images) {
-                        if (!images?.isEmpty())
+                        if (!images?.isEmpty()) {
                             GetBitmapFromURLAsync().execute(images?.get(0))
+                        }else{
+                            imageDownloaded("", "")
+                        }
 //                        }
                     }
 
@@ -128,6 +131,7 @@ class SplashActivity : BaseActivity() {
         var imageUrl = ""
         override fun doInBackground(vararg params: String): Bitmap? {
             imageUrl = params[0]
+            println("startImage = ${imageUrl}")
             return try {
                 getBitmapFromURL(params[0])
             } catch (ex: Exception) {
@@ -145,6 +149,7 @@ class SplashActivity : BaseActivity() {
                         bitmap?.compress(Bitmap.CompressFormat.PNG, 90, fos)
                         fos.close()
                         imageDownloaded(imageUrl, pictureFile?.absolutePath!!)
+                        println("finishImage = ${imageUrl}")
                     } catch (e: FileNotFoundException) {
                         e.printStackTrace()
                         imageDownloaded("", "")
@@ -176,6 +181,7 @@ class SplashActivity : BaseActivity() {
     }
 
     private fun imageDownloaded(imageUrl: String, localPath: String) {
+        println("imageDownloaded = ${imageUrl}, localPath = ${localPath}")
         if (trip.image == imageUrl) {
             trip.image = localPath
         } else {
@@ -283,7 +289,7 @@ class SplashActivity : BaseActivity() {
                 return null
             }
         }
-        val timeStamp = SimpleDateFormat("ddMMyyyy_HHmmss", Locale.getDefault()).format(Date())
+        val timeStamp = SimpleDateFormat("ddMMyyyy_HHmmssS", Locale.getDefault()).format(Date())
         val mediaFile: File
         val mImageName = "MI_$timeStamp.jpg"
         mediaFile = File(mediaStorageDir.path + File.separator + mImageName)
