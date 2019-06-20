@@ -61,6 +61,7 @@ class DetailsFragment : Fragment() {
 
     @OnClick(R.id.closeButton)
     fun closeButton() {
+        GlobalData?.selectedMarker = null
         activity?.supportFragmentManager?.popBackStack()
     }
 

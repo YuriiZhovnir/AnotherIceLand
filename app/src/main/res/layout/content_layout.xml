@@ -43,8 +43,7 @@
                     android:id="@+id/locationImage"
                     android:layout_width="124dp"
                     android:layout_height="124dp"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/ic_login_background" />
+                    android:scaleType="centerCrop" />
 
                 <LinearLayout
                     android:layout_width="match_parent"

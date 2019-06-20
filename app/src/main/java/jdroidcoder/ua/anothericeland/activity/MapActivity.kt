@@ -140,7 +140,7 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
         setNextPoint()
     }
 
-    private fun setNextPoint(){
+    private fun setNextPoint() {
         val currentItem = GlobalData?.trip?.points?.firstOrNull { point -> !point?.isDone && point?.typeId != 3 }
         if (currentItem == null) {
             bottomSheetTitle?.text = getString(R.string.trip_completed)
@@ -310,7 +310,7 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
                 null
             }
             marker?.icon = icon
-            if (temp.image?.isNotEmpty() == false)
+            if (temp.image?.isNullOrEmpty() == false)
                 Picasso.get().load(File(temp.image)).into(locationImage)
             locationName?.text = temp.name
             locationShortDescription?.text = temp.description
@@ -348,14 +348,15 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
 
     @OnClick(R.id.more, R.id.bottom)
     fun more() {
-        if (supportFragmentManager?.findFragmentByTag(DetailsFragment.TAG) == null) {
-            val fragment = DetailsFragment.newInstance()
-            supportFragmentManager?.beginTransaction()
-                    ?.setCustomAnimations(R.anim.enter_to_up, 0, 0, R.anim.enter_to_down)
-                    ?.replace(android.R.id.content, fragment, DetailsFragment.TAG)
-                    ?.addToBackStack(fragment::class.java.name)
-                    ?.commit()
-        }
+        if (GlobalData?.selectedMarker != null)
+            if (supportFragmentManager?.findFragmentByTag(DetailsFragment.TAG) == null) {
+                val fragment = DetailsFragment.newInstance()
+                supportFragmentManager?.beginTransaction()
+                        ?.setCustomAnimations(R.anim.enter_to_up, 0, 0, R.anim.enter_to_down)
+                        ?.replace(android.R.id.content, fragment, DetailsFragment.TAG)
+                        ?.addToBackStack(fragment::class.java.name)
+                        ?.commit()
+            }
     }
 
     override fun onStart() {
