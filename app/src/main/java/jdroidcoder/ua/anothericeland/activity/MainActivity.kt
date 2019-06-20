@@ -16,11 +16,6 @@ class MainActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        GlobalData?.trip = Util.getTrip(this)
-        if (GlobalData.trip != null) {
-            startActivity(Intent(this, MapActivity::class.java))
-            finish()
-        }
         setContentView(R.layout.activity_main)
         ButterKnife.bind(this)
     }

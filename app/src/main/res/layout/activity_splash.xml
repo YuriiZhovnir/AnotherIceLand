@@ -28,5 +28,15 @@
             android:layout_height="48dp"
             android:layout_marginTop="25dp"
             android:background="@drawable/spinner_white" />
+
+        <TextView
+            android:id="@+id/status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/receiving_data"
+            android:fontFamily="@font/montserrat_regular"
+            android:textColor="@android:color/white"
+            android:textSize="12sp" />
     </LinearLayout>
 </RelativeLayout>

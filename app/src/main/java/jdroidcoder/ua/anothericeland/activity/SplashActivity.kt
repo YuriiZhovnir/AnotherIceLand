@@ -48,10 +48,12 @@ class SplashActivity : BaseActivity() {
     private var imageDownloadedCount = 0
     val images: ArrayList<String> = ArrayList()
     lateinit var trip: Trip
+    private var dayCount = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
+        status?.text = getString(R.string.receiving_data)
         if (GlobalData.trip == null) {
             checkPermission()
         } else {
@@ -110,13 +112,11 @@ class SplashActivity : BaseActivity() {
                             }
                             it.isHotel = it.typeId?.let { it1 -> Util.isHotel(it1) } ?: false
                         }
-//                        for (image in images) {
                         if (!images?.isEmpty()) {
                             GetBitmapFromURLAsync().execute(images?.get(0))
-                        }else{
+                        } else {
                             imageDownloaded("", "")
                         }
-//                        }
                     }
 
                     override fun onError(e: Throwable) {
@@ -194,11 +194,80 @@ class SplashActivity : BaseActivity() {
         imageDownloadedCount++
         if (imageDownloadedCount >= images?.count()) {
             makeDays()
-            Util.saveTrip(this, trip)
-            GlobalData.trip = trip
-            getRoute()
+            status?.text = getString(R.string.building_routes)
+            getDayRoutes(dayCount)
         } else {
             GetBitmapFromURLAsync().execute(images?.get(imageDownloadedCount))
+        }
+    }
+
+    private fun getDayRoutes(dayIndex: Int) {
+        println("start route $dayCount")
+        val firstPoint = trip?.days?.get(dayIndex)?.points?.first()
+        val lastPoint = trip?.days?.get(dayIndex)?.points?.last()
+        val origin = firstPoint?.lng?.let { firstPoint?.lat?.let { it1 -> com.mapbox.geojson.Point.fromLngLat(it, it1) } }
+        val destination = lastPoint?.lng?.let { lastPoint?.lat?.let { it1 -> com.mapbox.geojson.Point.fromLngLat(it, it1) } }
+        origin?.let { it1 ->
+            destination?.let { it2 ->
+                val builder = NavigationRoute.builder(this)
+                        .accessToken(getString(R.string.map_token))
+                        .origin(it1)
+                        .destination(it2)
+                        .profile(DirectionsCriteria.PROFILE_DRIVING)
+
+                trip?.days?.get(dayIndex)?.points?.let { it4 ->
+                    for (point in it4) {
+                        if (point != firstPoint && point != lastPoint) {
+                            point.lng?.let { it2 ->
+                                point.lat?.let { it3 ->
+                                    com.mapbox.geojson.Point.fromLngLat(it2, it3)
+                                }
+                            }?.let { it3 ->
+                                builder?.addWaypoint(it3)
+                            }
+                        }
+                    }
+                }
+                builder?.build()?.getRoute(object : Callback<DirectionsResponse> {
+                    override fun onResponse(call: Call<DirectionsResponse>, response: Response<DirectionsResponse>) {
+                        if (response.body() == null) {
+                            dayCount++
+                            if (dayCount >= trip?.days?.count()) {
+                                GlobalData.trip = trip
+                                getRoute()
+                            }
+                            return
+                        } else if (response.body()?.routes()?.size!! < 1) {
+                            dayCount++
+                            if (dayCount >= trip?.days?.count()) {
+                                GlobalData.trip = trip
+                                getRoute()
+                            }
+                            return
+                        }
+                        trip?.days?.get(dayIndex)?.direction = response.body()?.routes()?.first()
+                        dayCount++
+                        println("finish route $dayCount")
+                        if (dayCount >= trip?.days?.count()) {
+                            GlobalData.trip = trip
+                            runOnUiThread {
+                                status?.text = getString(R.string.yet_not_much)
+                            }
+                            getRoute()
+                        } else {
+                            getDayRoutes(dayCount)
+                        }
+                    }
+
+                    override fun onFailure(call: Call<DirectionsResponse>, t: Throwable) {
+                        dayCount++
+                        if (dayCount >= trip?.days?.count()) {
+                            GlobalData.trip = trip
+                            getRoute()
+                        }
+                    }
+                })
+            }
         }
     }
 
@@ -241,11 +310,17 @@ class SplashActivity : BaseActivity() {
                             return
                         }
                         val currentRoute: DirectionsRoute? = response.body()?.routes()?.first()
-                        GlobalData.directionsRoute = currentRoute
-                        Util.saveRoute(this@SplashActivity, currentRoute)
-                        startActivity(Intent(this@SplashActivity, MapActivity::class.java))
-                        setResult(Activity.RESULT_OK)
-                        finish()
+                        Thread {
+                            runOnUiThread {
+                                status?.text = getString(R.string.saving_data)
+                            }
+                            GlobalData.directionsRoute = currentRoute
+                            Util.saveRoute(this@SplashActivity, currentRoute)
+                            Util.saveTrip(this@SplashActivity, trip)
+                            startActivity(Intent(this@SplashActivity, MapActivity::class.java))
+                            setResult(Activity.RESULT_OK)
+                            finish()
+                        }.start()
                     }
 
                     override fun onFailure(call: Call<DirectionsResponse>, t: Throwable) {
@@ -269,7 +344,7 @@ class SplashActivity : BaseActivity() {
                 } else {
                     temp.add(point)
                     val tempPoints: ArrayList<Point> = ArrayList(temp)
-                    trip?.days?.add(Day("Day $dayNumber", tempPoints, false))
+                    trip?.days?.add(Day("Day $dayNumber", tempPoints, false, null))
                     temp?.clear()
                     dayNumber++
                 }

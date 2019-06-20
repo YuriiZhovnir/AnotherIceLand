@@ -54,19 +54,34 @@ object Util {
     }
 
     fun saveTrip(context: Context, trip: Trip) {
-        context?.getSharedPreferences("trip_file", Context.MODE_PRIVATE)?.edit()
-                ?.putString("trip", GsonBuilder().create().toJson(trip))
-                ?.apply()
+        try {
+            val fos = context.openFileOutput("trip_file", Context.MODE_PRIVATE)
+            val os = ObjectOutputStream(fos)
+            os.writeObject(trip)
+            os.close()
+            fos.close()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
     }
 
     fun getTrip(context: Context): Trip? {
         return try {
-            GsonBuilder().create().fromJson(context?.getSharedPreferences("trip_file", Context.MODE_PRIVATE)?.getString("trip", ""), Trip::class.java)
-        } catch (ex: Exception) {
-            ex.printStackTrace()
+            val fis = context.openFileInput("trip_file")
+            val `is` = ObjectInputStream(fis)
+            val trip = `is`.readObject() as Trip?
+            `is`.close()
+            fis.close()
+            trip
+        } catch (e: IOException) {
+            e.printStackTrace()
+            null
+        } catch (e: ClassNotFoundException) {
+            e.printStackTrace()
             null
         }
     }
+
     fun saveRoute(context: Context, token: DirectionsRoute?) {
         try {
             val fos = context.openFileOutput("route_file", Context.MODE_PRIVATE)

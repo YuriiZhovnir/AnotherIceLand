@@ -7,7 +7,7 @@ import retrofit2.http.POST
 import rx.Observable
 
 interface Api {
-    @POST("test")
+    @POST("get-purchase")
     @FormUrlEncoded
     fun getTrip(@Field("booking_number") bookingNumber: String?, @Field("password") password: String?): Observable<Trip>
 }

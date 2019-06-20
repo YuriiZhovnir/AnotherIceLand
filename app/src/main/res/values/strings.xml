@@ -11,4 +11,8 @@
     <string name="trip_completed">Trip completed</string>
     <string name="invalid_data">Invalid data</string>
     <string name="phone">Phone:</string>
+    <string name="receiving_data">Receiving data from server</string>
+    <string name="building_routes">Building a route</string>
+    <string name="yet_not_much">Yet not much</string>
+    <string name="saving_data">Saving data</string>
 </resources>

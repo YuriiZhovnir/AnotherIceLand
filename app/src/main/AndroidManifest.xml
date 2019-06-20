@@ -20,7 +20,8 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
         <activity
-            android:name="jdroidcoder.ua.anothericeland.activity.MainActivity"
+            android:name="jdroidcoder.ua.anothericeland.activity.StartActivity"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan|stateAlwaysHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -29,10 +30,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".activity.MainActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.MapActivity"
+            android:screenOrientation="portrait" />
 
-        <activity android:name=".activity.MapActivity" />
-
-        <activity android:name=".activity.SplashActivity" />
+        <activity
+            android:name=".activity.SplashActivity"
+            android:screenOrientation="portrait" />
 
         <meta-data
             android:name="io.fabric.ApiKey"
