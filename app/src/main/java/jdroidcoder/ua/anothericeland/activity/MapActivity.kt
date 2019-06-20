@@ -65,8 +65,6 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
     private val CURRENT_ROUTE_SOURCE_ID = "current-route-source-id"
     private val OTHER_DAY_ROUTE_LAYER_ID = "other-day-route-layer-id"
     private val OTHER_DAY_ROUTE_SOURCE_ID = "other-day-route-source-id"
-    private val FULL_ROUTE_LAYER_ID = "full-route-layer-id"
-    private val FULL_ROUTE_SOURCE_ID = "full-route-source-id"
 
     companion object {
         var markers: HashMap<Marker, jdroidcoder.ua.anothericeland.network.response.Point> = HashMap()
@@ -125,6 +123,9 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
                     bottomSheetHeader?.setBackgroundColor(Color.parseColor("#CCFFFFFF"))
+                    Thread {
+                        GlobalData.trip?.let { Util.saveTrip(this@MapActivity, it) }
+                    }.start()
                 } else {
                     bottomSheetHeader?.setBackgroundColor(Color.parseColor("#FFFFFF"))
                 }
@@ -223,7 +224,7 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
                 runOnUiThread {
                     navigationMapRoute = try {
                         NavigationMapRoute(mapView, mapboxMap, "com.mapbox.annotations.points")
-                    }catch (ex:Exception){
+                    } catch (ex: Exception) {
                         NavigationMapRoute(mapView, mapboxMap)
                     }
                     navigationMapRoute?.addRoute(GlobalData.directionsRoute)
