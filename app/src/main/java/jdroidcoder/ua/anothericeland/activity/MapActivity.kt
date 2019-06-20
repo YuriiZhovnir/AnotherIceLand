@@ -123,6 +123,8 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
                     bottomSheetHeader?.setBackgroundColor(Color.parseColor("#CCFFFFFF"))
+                    setNextPoint()
+                    drawCurrentRoute()
                     Thread {
                         GlobalData.trip?.let { Util.saveTrip(this@MapActivity, it) }
                     }.start()
@@ -135,6 +137,10 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
             }
         })
         gpsDetector()
+        setNextPoint()
+    }
+
+    private fun setNextPoint(){
         val currentItem = GlobalData?.trip?.points?.firstOrNull { point -> !point?.isDone && point?.typeId != 3 }
         if (currentItem == null) {
             bottomSheetTitle?.text = getString(R.string.trip_completed)
