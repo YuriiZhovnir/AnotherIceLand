@@ -478,12 +478,11 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
                 Picasso.get().load(File(temp.image)).into(locationImage)
             locationName?.text = temp.name
             locationShortDescription?.text = temp.description
-        }
-
-        if (bottom?.visibility == View.GONE) {
-            val anim = AnimationUtils.loadAnimation(this, R.anim.enter_to_up)
-            bottom?.visibility = View.VISIBLE
-            bottom?.startAnimation(anim)
+            if (bottom?.visibility == View.GONE) {
+                val anim = AnimationUtils.loadAnimation(this, R.anim.enter_to_up)
+                bottom?.visibility = View.VISIBLE
+                bottom?.startAnimation(anim)
+            }
         }
         return false
     }
