@@ -92,7 +92,8 @@ class SplashActivity : BaseActivity() {
     private fun download() {
         spinner?.background?.let { showSpinner(it) }
         val apiService: Api? = ApiServiceInitializer.init("http://18.184.47.87/api/")?.create(Api::class.java)
-        apiService?.getTrip(GlobalData?.number, GlobalData?.password)
+//        GlobalData?.password
+        apiService?.getTrip(GlobalData?.number, null)
                 ?.subscribeOn(Schedulers.io())
                 ?.observeOn(AndroidSchedulers.mainThread())
                 ?.unsubscribeOn(Schedulers.io())
