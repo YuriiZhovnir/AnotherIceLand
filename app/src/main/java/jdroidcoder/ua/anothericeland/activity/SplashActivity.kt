@@ -65,17 +65,17 @@ class SplashActivity : BaseActivity() {
 
     private fun checkPermission() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-                == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                        this,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE
-                ) == PackageManager.PERMISSION_GRANTED
+            == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ) == PackageManager.PERMISSION_GRANTED
         ) {
             download()
         } else {
             ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                    43
+                this,
+                arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                43
             )
         }
     }
@@ -94,38 +94,38 @@ class SplashActivity : BaseActivity() {
         val apiService: Api? = ApiServiceInitializer.init("http://18.184.47.87/api/")?.create(Api::class.java)
 //        GlobalData?.password
         apiService?.getTrip(GlobalData?.number, null)
-                ?.subscribeOn(Schedulers.io())
-                ?.observeOn(AndroidSchedulers.mainThread())
-                ?.unsubscribeOn(Schedulers.io())
-                ?.subscribe(object : RetrofitSubscriber<Trip>() {
-                    override fun onNext(response: Trip) {
-                        trip = response
-                        if (response?.image?.isNullOrEmpty() == false) {
-                            response?.image?.let {
-                                images.add(it)
-                            }
-                        }
-                        response?.points?.forEach {
-                            if (it.image?.isNullOrEmpty() == false) {
-                                it.image?.let { it1 ->
-                                    images.add(it1)
-                                }
-                            }
-                            it.isHotel = it.typeId?.let { it1 -> Util.isHotel(it1) } ?: false
-                        }
-                        if (!images?.isEmpty()) {
-                            GetBitmapFromURLAsync().execute(images?.get(0))
-                        } else {
-                            imageDownloaded("", "")
+            ?.subscribeOn(Schedulers.io())
+            ?.observeOn(AndroidSchedulers.mainThread())
+            ?.unsubscribeOn(Schedulers.io())
+            ?.subscribe(object : RetrofitSubscriber<Trip>() {
+                override fun onNext(response: Trip) {
+                    trip = response
+                    if (response?.image?.isNullOrEmpty() == false) {
+                        response?.image?.let {
+                            images.add(it)
                         }
                     }
+                    response?.points?.forEach {
+                        if (it.image?.isNullOrEmpty() == false) {
+                            it.image?.let { it1 ->
+                                images.add(it1)
+                            }
+                        }
+                        it.isHotel = it.typeId?.let { it1 -> Util.isHotel(it1) } ?: false
+                    }
+                    if (!images?.isEmpty()) {
+                        GetBitmapFromURLAsync().execute(images?.get(0))
+                    } else {
+                        imageDownloaded("", "")
+                    }
+                }
 
-                    override fun onError(e: Throwable) {
-                        super.onError(e)
-                        setResult(Activity.RESULT_CANCELED)
-                        finish()
-                    }
-                })
+                override fun onError(e: Throwable) {
+                    super.onError(e)
+                    setResult(Activity.RESULT_CANCELED)
+                    finish()
+                }
+            })
     }
 
     private inner class GetBitmapFromURLAsync : AsyncTask<String, Void, Bitmap?>() {
@@ -206,15 +206,17 @@ class SplashActivity : BaseActivity() {
         println("start route $dayCount")
         val firstPoint = trip?.days?.get(dayIndex)?.points?.first()
         val lastPoint = trip?.days?.get(dayIndex)?.points?.last()
-        val origin = firstPoint?.lng?.let { firstPoint?.lat?.let { it1 -> com.mapbox.geojson.Point.fromLngLat(it, it1) } }
-        val destination = lastPoint?.lng?.let { lastPoint?.lat?.let { it1 -> com.mapbox.geojson.Point.fromLngLat(it, it1) } }
+        val origin =
+            firstPoint?.lng?.let { firstPoint?.lat?.let { it1 -> com.mapbox.geojson.Point.fromLngLat(it, it1) } }
+        val destination =
+            lastPoint?.lng?.let { lastPoint?.lat?.let { it1 -> com.mapbox.geojson.Point.fromLngLat(it, it1) } }
         origin?.let { it1 ->
             destination?.let { it2 ->
                 val builder = NavigationRoute.builder(this)
-                        .accessToken(getString(R.string.map_token))
-                        .origin(it1)
-                        .destination(it2)
-                        .profile(DirectionsCriteria.PROFILE_DRIVING)
+                    .accessToken(getString(R.string.map_token))
+                    .origin(it1)
+                    .destination(it2)
+                    .profile(DirectionsCriteria.PROFILE_DRIVING)
 
                 trip?.days?.get(dayIndex)?.points?.let { it4 ->
                     for (point in it4) {
@@ -236,7 +238,7 @@ class SplashActivity : BaseActivity() {
                             if (dayCount >= trip?.days?.count()) {
                                 GlobalData.trip = trip
                                 getRoute()
-                            }else{
+                            } else {
                                 getDayRoutes(dayCount)
                             }
                             return
@@ -245,7 +247,7 @@ class SplashActivity : BaseActivity() {
                             if (dayCount >= trip?.days?.count()) {
                                 GlobalData.trip = trip
                                 getRoute()
-                            }else{
+                            } else {
                                 getDayRoutes(dayCount)
                             }
                             return
@@ -258,7 +260,7 @@ class SplashActivity : BaseActivity() {
                             runOnUiThread {
                                 status?.text = getString(R.string.yet_not_much)
                             }
-                            GlobalData.currentDay = GlobalData?.trip?.days?.firstOrNull { day-> !day.isDone }
+                            GlobalData.currentDay = GlobalData?.trip?.days?.firstOrNull { day -> !day.isDone }
                             getRoute()
                         } else {
                             getDayRoutes(dayCount)
@@ -280,16 +282,18 @@ class SplashActivity : BaseActivity() {
     private fun getRoute() {
         val firstPoint = trip?.points?.first()
         val lastPoint = trip?.points?.last()
-        val origin = firstPoint?.lng?.let { firstPoint?.lat?.let { it1 -> com.mapbox.geojson.Point.fromLngLat(it, it1) } }
-        val destination = lastPoint?.lng?.let { lastPoint?.lat?.let { it1 -> com.mapbox.geojson.Point.fromLngLat(it, it1) } }
+        val origin =
+            firstPoint?.lng?.let { firstPoint?.lat?.let { it1 -> com.mapbox.geojson.Point.fromLngLat(it, it1) } }
+        val destination =
+            lastPoint?.lng?.let { lastPoint?.lat?.let { it1 -> com.mapbox.geojson.Point.fromLngLat(it, it1) } }
 
         origin?.let {
             destination?.let { it1 ->
                 val builder = NavigationRoute.builder(this)
-                        .accessToken(getString(R.string.map_token))
-                        .origin(it)
-                        .destination(it1)
-                        .profile(DirectionsCriteria.PROFILE_DRIVING)
+                    .accessToken(getString(R.string.map_token))
+                    .origin(it)
+                    .destination(it1)
+                    .profile(DirectionsCriteria.PROFILE_DRIVING)
 
                 trip?.points?.let {
                     for (point in it) {
@@ -344,10 +348,19 @@ class SplashActivity : BaseActivity() {
         trip?.points?.let {
             var dayNumber = 1
             val temp: ArrayList<Point> = ArrayList()
+            var lastHotel:Point? = null
             for (point in it) {
+                lastHotel?.let { it1 -> temp.add(it1) }
+//                if (!trip?.days?.isNullOrEmpty()) {
+//                    val tempHotel = trip?.days?.get(dayNumber - 2)?.points?.firstOrNull { p -> p.isHotel }
+//                    if (tempHotel != null) {
+//                        temp.add(tempHotel)
+//                    }
+//                }
                 if (!point.isHotel && point != it.lastOrNull()) {
                     temp.add(point)
                 } else {
+                    lastHotel = point
                     temp.add(point)
                     val tempPoints: ArrayList<Point> = ArrayList(temp)
                     trip?.days?.add(Day("Day $dayNumber", tempPoints, false, null))
@@ -360,10 +373,10 @@ class SplashActivity : BaseActivity() {
 
     private fun getOutputMediaFile(): File? {
         val mediaStorageDir = File(
-                Environment.getExternalStorageDirectory().toString()
-                        + "/Android/data/"
-                        + applicationContext.packageName
-                        + "/Files"
+            Environment.getExternalStorageDirectory().toString()
+                    + "/Android/data/"
+                    + applicationContext.packageName
+                    + "/Files"
         )
         if (!mediaStorageDir.exists()) {
             if (!mediaStorageDir.mkdirs()) {
@@ -381,8 +394,8 @@ class SplashActivity : BaseActivity() {
         try {
             if (frameAnimation == null) {
                 window?.setFlags(
-                        WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-                        WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
                 )
                 frameAnimation = drawable as AnimationDrawable
                 frameAnimation?.start()
@@ -390,8 +403,8 @@ class SplashActivity : BaseActivity() {
         } catch (ex: Exception) {
             ex.printStackTrace()
             window?.setFlags(
-                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
             )
         }
     }

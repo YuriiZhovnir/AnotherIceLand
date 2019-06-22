@@ -9,7 +9,6 @@ import android.graphics.Color
 import android.graphics.Point
 import android.location.GpsStatus
 import android.location.LocationManager
-import android.os.AsyncTask
 import android.os.Bundle
 import android.os.Handler
 import android.support.v7.widget.LinearLayoutManager
@@ -27,10 +26,8 @@ import android.view.animation.AnimationUtils
 import android.widget.LinearLayout
 import butterknife.ButterKnife
 import butterknife.OnClick
-import com.mapbox.core.constants.Constants.PRECISION_6
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
-import com.mapbox.geojson.LineString
 import com.mapbox.mapboxsdk.annotations.IconFactory
 import com.mapbox.mapboxsdk.annotations.Marker
 import com.mapbox.mapboxsdk.annotations.MarkerOptions
@@ -85,23 +82,21 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
         GlobalData?.trip?.days?.let {
             for (day in it) {
                 points.add(
-                    jdroidcoder.ua.anothericeland.network.response.Point(
-                        3, day.name,
-                        "", "", "", null, null, false,
-                        if (day.name == "Day 1") {
-                            true
-                        } else {
-                            day.isDone
-                        }
-                    )
+                        jdroidcoder.ua.anothericeland.network.response.Point(
+                                3, day.name,
+                                "", "", "", null, null, false,
+                                if (day.name == "Day 1") {
+                                    true
+                                } else {
+                                    day.isDone
+                                }
+                        )
                 )
                 points.addAll(day.points)
             }
         }
         planList?.adapter = PlanAdapter(points, object : SheetListener {
             override fun dayChosen(point: jdroidcoder.ua.anothericeland.network.response.Point) {
-                val geometrics: MutableList<Feature> = ArrayList()
-                val currentDay = GlobalData?.trip?.days?.firstOrNull { day -> !day.isDone }
                 var chosenDay: Day? = null
                 for (day in GlobalData?.trip?.days!!) {
                     if (day?.points?.contains(point)) {
@@ -109,14 +104,15 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
                     }
                 }
                 removeTempMarkers()
+                removeMarkers()
                 chosenDay?.points?.forEach {
                     val iconFactory = IconFactory.getInstance(this@MapActivity)
                     val icon = try {
                         iconFactory.fromBitmap(
-                            Util.buildIcon(
-                                this@MapActivity,
-                                BitmapFactory.decodeFile(it?.image), R.drawable.ic_pin_grey
-                            )
+                                Util.buildIcon(
+                                        this@MapActivity,
+                                        BitmapFactory.decodeFile(it?.image), R.drawable.ic_pin_grey
+                                )
                         )
                     } catch (ex: Exception) {
                         ex.printStackTrace()
@@ -124,31 +120,22 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
                     }
                     if (it.lat != null && it.lng != null) {
                         val temp = MarkerOptions()
-                            .position(it.lat?.let { it1 -> it.lng?.let { it2 -> LatLng(it1, it2) } })
-                            .setIcon(icon)
+                                .position(it.lat?.let { it1 -> it.lng?.let { it2 -> LatLng(it1, it2) } })
+                                .setIcon(icon)
                         tempMarkers.put(mapboxMap?.addMarker(temp), it)
                     }
                 }
                 if (chosenDay != null) {
-                    if (chosenDay != currentDay) {
-                        chosenDay?.direction?.legs()?.let {
-                            for (leg in it) {
-                                if (leg?.steps()?.isNullOrEmpty() == false) {
-                                    for (step in leg.steps()!!)
-                                        geometrics?.add(Feature.fromGeometry(step.geometry()?.let { it1 ->
-                                            LineString.fromPolyline(
-                                                it1,
-                                                PRECISION_6
-                                            )
-                                        }))
-                                }
+                    Handler().post {
+                        navigationMapRoute?.removeRoute()
+                        if (chosenDay?.direction != null) {
+                            try {
+                                navigationMapRoute?.addRoute(chosenDay?.direction)
+                            } catch (ex: Exception) {
+                                ex.printStackTrace()
                             }
                         }
-                    } else {
-                        geometrics.clear()
                     }
-                    style?.getSourceAs<GeoJsonSource>(OTHER_DAY_ROUTE_SOURCE_ID)
-                        ?.setGeoJson(FeatureCollection.fromFeatures(geometrics))
                 }
             }
         }, object : ChangePointListener {
@@ -164,17 +151,17 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
                     markers?.remove(tempMarker)
                 } else {
                     val iconFactory = IconFactory.getInstance(this@MapActivity)
-                    val pin = if(GlobalData.currentDay?.points?.contains(point) == true){
+                    val pin = if (GlobalData.currentDay?.points?.contains(point) == true) {
                         R.drawable.ic_pin_inactive
-                    }else{
+                    } else {
                         R.drawable.ic_pin_grey
                     }
                     val icon = try {
                         iconFactory.fromBitmap(
-                            Util.buildIcon(
-                                this@MapActivity,
-                                BitmapFactory.decodeFile(point?.image), pin
-                            )
+                                Util.buildIcon(
+                                        this@MapActivity,
+                                        BitmapFactory.decodeFile(point?.image), pin
+                                )
                         )
                     } catch (ex: Exception) {
                         ex.printStackTrace()
@@ -182,11 +169,11 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
                     }
                     if (point.lat != null && point.lng != null) {
                         val temp = MarkerOptions()
-                            .position(point.lat?.let { it1 -> point.lng?.let { it2 -> LatLng(it1, it2) } })
-                            .setIcon(icon)
-                        if(GlobalData.currentDay?.points?.contains(point) == true) {
+                                .position(point.lat?.let { it1 -> point.lng?.let { it2 -> LatLng(it1, it2) } })
+                                .setIcon(icon)
+                        if (GlobalData.currentDay?.points?.contains(point) == true) {
                             markers.put(mapboxMap?.addMarker(temp), point)
-                        }else{
+                        } else {
                             tempMarkers.put(mapboxMap?.addMarker(temp), point)
                         }
                     }
@@ -199,22 +186,19 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
                     bottomSheetHeader?.setBackgroundColor(Color.parseColor("#CCFFFFFF"))
-                    val previousDay = GlobalData.currentDay
                     val newDay = GlobalData?.trip?.days?.firstOrNull { day -> !day.isDone }
                     removeTempMarkers()
-                    try{
+                    try {
                         style?.getSourceAs<GeoJsonSource>(OTHER_DAY_ROUTE_SOURCE_ID)
-                            ?.setGeoJson(FeatureCollection.fromFeatures(arrayOf()))
-                    }catch (ex:Exception){
+                                ?.setGeoJson(FeatureCollection.fromFeatures(arrayOf()))
+                    } catch (ex: Exception) {
                         ex.printStackTrace()
                     }
-                    if (previousDay != newDay) {
-                        removeMarkers()
-                        GlobalData.currentDay = newDay
-                        setNextPoint()
-                        drawFullRoute()
-                        setMarkers()
-                    }
+                    removeMarkers()
+                    GlobalData.currentDay = newDay
+                    setNextPoint()
+                    drawFullRoute()
+                    setMarkers()
                     Thread {
                         GlobalData.trip?.let { Util.saveTrip(this@MapActivity, it) }
                     }.start()
@@ -266,6 +250,48 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
         }
     }
 
+    @OnClick(R.id.showFullTrip)
+    fun showFullTrip() {
+        if (GlobalData.directionsRoute == null) {
+            GlobalData.directionsRoute = Util.loadRoute(this)
+        }
+        removeTempMarkers()
+        removeMarkers()
+        GlobalData.trip?.points?.forEach {
+            if (!tempMarkers?.values?.contains(it)) {
+                val iconFactory = IconFactory.getInstance(this@MapActivity)
+                val icon = try {
+                    iconFactory.fromBitmap(
+                            Util.buildIcon(
+                                    this@MapActivity,
+                                    BitmapFactory.decodeFile(it?.image), R.drawable.ic_pin_grey
+                            )
+                    )
+                } catch (ex: Exception) {
+                    ex.printStackTrace()
+                    null
+                }
+                if (it.lat != null && it.lng != null) {
+                    val temp = MarkerOptions()
+                            .position(it.lat?.let { it1 -> it.lng?.let { it2 -> LatLng(it1, it2) } })
+                            .setIcon(icon)
+                    tempMarkers.put(mapboxMap?.addMarker(temp), it)
+                }
+            }
+        }
+
+        Handler().post {
+            navigationMapRoute?.removeRoute()
+            if (GlobalData?.directionsRoute != null) {
+                try {
+                    navigationMapRoute?.addRoute(GlobalData?.directionsRoute)
+                } catch (ex: Exception) {
+                    ex.printStackTrace()
+                }
+            }
+        }
+    }
+
     private fun gpsDetector() {
         try {
             val lm = getSystemService(Context.LOCATION_SERVICE) as LocationManager
@@ -286,7 +312,7 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
         val size = Point()
         display.getSize(size)
         val params = bottomSheetHeader?.layoutParams as LinearLayout.LayoutParams
-        params.height = (size.y * 0.35).toInt()
+        params.height = (size.y * 0.45).toInt()
         bottomSheetHeader?.layoutParams = params
     }
 
@@ -298,12 +324,12 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
             initSource(style)
             initLayers(style)
             mapboxMap?.locationComponent?.activateLocationComponent(
-                LocationComponentActivationOptions.builder(this@MapActivity, style).build()
+                    LocationComponentActivationOptions.builder(this@MapActivity, style).build()
             )
             mapboxMap?.locationComponent?.cameraMode = CameraMode.TRACKING
             mapboxMap?.locationComponent?.renderMode = RenderMode.COMPASS
             if (ActivityCompat.checkSelfPermission(this@MapActivity, android.Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED
+                    == PackageManager.PERMISSION_GRANTED
             ) {
                 mapboxMap?.locationComponent?.isLocationComponentEnabled = true
             }
@@ -334,18 +360,18 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
                 val iconFactory = IconFactory.getInstance(this)
                 val icon = try {
                     iconFactory.fromBitmap(
-                        Util.buildIcon(
-                            this,
-                            BitmapFactory.decodeFile(point?.image), R.drawable.ic_pin_inactive
-                        )
+                            Util.buildIcon(
+                                    this,
+                                    BitmapFactory.decodeFile(point?.image), R.drawable.ic_pin_inactive
+                            )
                     )
                 } catch (ex: Exception) {
                     ex.printStackTrace()
                     null
                 }
                 val temp = MarkerOptions()
-                    .position(point.lat?.let { it1 -> point.lng?.let { it2 -> LatLng(it1, it2) } })
-                    .setIcon(icon)
+                        .position(point.lat?.let { it1 -> point.lng?.let { it2 -> LatLng(it1, it2) } })
+                        .setIcon(icon)
                 markers.put(this.mapboxMap?.addMarker(temp), point)
             }
         }
@@ -366,7 +392,11 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
         Handler().post {
             if (GlobalData.currentDay != null) {
                 navigationMapRoute?.removeRoute()
-                navigationMapRoute?.addRoute(GlobalData.currentDay?.direction)
+                try {
+                    navigationMapRoute?.addRoute(GlobalData.currentDay?.direction)
+                } catch (ex: Exception) {
+                    ex.printStackTrace()
+                }
             }
         }
 
@@ -405,36 +435,36 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
 
     private fun initSource(loadedMapStyle: Style) {
         loadedMapStyle?.addSource(
-            GeoJsonSource(
-                CURRENT_ROUTE_SOURCE_ID,
-                FeatureCollection.fromFeatures(ArrayList<Feature>())
-            )
+                GeoJsonSource(
+                        CURRENT_ROUTE_SOURCE_ID,
+                        FeatureCollection.fromFeatures(ArrayList<Feature>())
+                )
         )
         loadedMapStyle?.addSource(
-            GeoJsonSource(
-                OTHER_DAY_ROUTE_SOURCE_ID,
-                FeatureCollection.fromFeatures(ArrayList<Feature>())
-            )
+                GeoJsonSource(
+                        OTHER_DAY_ROUTE_SOURCE_ID,
+                        FeatureCollection.fromFeatures(ArrayList<Feature>())
+                )
         )
     }
 
     private fun initLayers(loadedMapStyle: Style) {
         var routeLayer = LineLayer(CURRENT_ROUTE_LAYER_ID, CURRENT_ROUTE_SOURCE_ID)
         routeLayer.setProperties(
-            lineCap(Property.LINE_CAP_ROUND),
-            lineJoin(Property.LINE_JOIN_ROUND),
-            lineWidth(12f),
-            PropertyFactory.fillOutlineColor("#000000"),
-            lineColor(Color.parseColor("#000000"))
+                lineCap(Property.LINE_CAP_ROUND),
+                lineJoin(Property.LINE_JOIN_ROUND),
+                lineWidth(12f),
+                PropertyFactory.fillOutlineColor("#000000"),
+                lineColor(Color.parseColor("#000000"))
         )
         loadedMapStyle.addLayerBelow(routeLayer, "com.mapbox.annotations.points")
         routeLayer = LineLayer(OTHER_DAY_ROUTE_LAYER_ID, OTHER_DAY_ROUTE_SOURCE_ID)
         routeLayer.setProperties(
-            lineCap(Property.LINE_CAP_ROUND),
-            lineJoin(Property.LINE_JOIN_ROUND),
-            lineWidth(12f),
-            PropertyFactory.fillOutlineColor("#008000"),
-            lineColor(Color.parseColor("#008000"))
+                lineCap(Property.LINE_CAP_ROUND),
+                lineJoin(Property.LINE_JOIN_ROUND),
+                lineWidth(12f),
+                PropertyFactory.fillOutlineColor("#008000"),
+                lineColor(Color.parseColor("#008000"))
         )
         loadedMapStyle.addLayerBelow(routeLayer, "com.mapbox.annotations.points")
     }
@@ -446,10 +476,10 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
             val iconFactory = IconFactory.getInstance(this)
             val icon = try {
                 iconFactory.fromBitmap(
-                    Util.buildIcon(
-                        this,
-                        BitmapFactory.decodeFile(temp.image), R.drawable.ic_pin_inactive
-                    )
+                        Util.buildIcon(
+                                this,
+                                BitmapFactory.decodeFile(temp.image), R.drawable.ic_pin_inactive
+                        )
                 )
             } catch (ex: Exception) {
                 ex.printStackTrace()
@@ -464,10 +494,10 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
             val iconFactory = IconFactory.getInstance(this)
             val icon = try {
                 iconFactory.fromBitmap(
-                    Util.buildIcon(
-                        this,
-                        BitmapFactory.decodeFile(temp.image), R.drawable.ic_pin_active
-                    )
+                        Util.buildIcon(
+                                this,
+                                BitmapFactory.decodeFile(temp.image), R.drawable.ic_pin_active
+                        )
                 )
             } catch (ex: Exception) {
                 ex.printStackTrace()
@@ -493,10 +523,10 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
             val iconFactory = IconFactory.getInstance(this)
             val icon = try {
                 iconFactory.fromBitmap(
-                    Util.buildIcon(
-                        this,
-                        BitmapFactory.decodeFile(temp.image), R.drawable.ic_pin_inactive
-                    )
+                        Util.buildIcon(
+                                this,
+                                BitmapFactory.decodeFile(temp.image), R.drawable.ic_pin_inactive
+                        )
                 )
             } catch (ex: Exception) {
                 ex.printStackTrace()
@@ -519,10 +549,10 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
             if (supportFragmentManager?.findFragmentByTag(DetailsFragment.TAG) == null) {
                 val fragment = DetailsFragment.newInstance()
                 supportFragmentManager?.beginTransaction()
-                    ?.setCustomAnimations(R.anim.enter_to_up, 0, 0, R.anim.enter_to_down)
-                    ?.replace(android.R.id.content, fragment, DetailsFragment.TAG)
-                    ?.addToBackStack(fragment::class.java.name)
-                    ?.commit()
+                        ?.setCustomAnimations(R.anim.enter_to_up, 0, 0, R.anim.enter_to_down)
+                        ?.replace(android.R.id.content, fragment, DetailsFragment.TAG)
+                        ?.addToBackStack(fragment::class.java.name)
+                        ?.commit()
             }
     }
 
@@ -564,14 +594,14 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED &&
-            ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
-            == PackageManager.PERMISSION_GRANTED
+                        this,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED
         ) {
             if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED
+                    == PackageManager.PERMISSION_GRANTED
             ) {
                 locationListener?.initGoogleClient()
                 mapboxMap?.locationComponent?.isLocationComponentEnabled = true

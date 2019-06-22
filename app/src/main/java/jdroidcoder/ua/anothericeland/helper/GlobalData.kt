@@ -10,6 +10,6 @@ object GlobalData {
     var selectedMarker: Marker? = null
     var number: String? = ""
     var password: String? = ""
-//    var directionsRoute: DirectionsRoute? = null
+    var directionsRoute: DirectionsRoute? = null
     var currentDay:Day? = null
 }

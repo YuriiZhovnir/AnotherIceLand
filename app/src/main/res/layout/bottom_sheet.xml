@@ -35,9 +35,9 @@
                 android:layout_height="wrap_content"
                 android:drawableTop="@drawable/ic_decore_line"
                 android:drawablePadding="9dp"
-                android:text="@string/my_itinerary"
                 android:fontFamily="@font/montserrat_medium"
                 android:gravity="center"
+                android:text="@string/my_itinerary"
                 android:textColor="#333333" />
         </LinearLayout>
 
@@ -46,10 +46,23 @@
             android:layout_height="wrap_content"
             android:background="@android:color/transparent">
 
+            <TextView
+                android:id="@+id/showFullTrip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:fontFamily="@font/montserrat_medium"
+                android:gravity="center"
+                android:text="@string/my_itinerary"
+                android:textColor="@color/blue" />
+
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/planList"
+                android:layout_marginTop="10dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_below="@id/showFullTrip"
                 android:background="@android:color/white"
                 android:padding="15dp" />
         </RelativeLayout>

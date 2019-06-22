@@ -21,6 +21,8 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="4dp"
         android:layout_marginEnd="16dp"
+        android:textDirection="locale"
+        android:textAlignment="gravity"
         android:layout_toStartOf="@id/dayIsDone"
         android:layout_toEndOf="@id/indicator"
         android:textSize="14sp" />
