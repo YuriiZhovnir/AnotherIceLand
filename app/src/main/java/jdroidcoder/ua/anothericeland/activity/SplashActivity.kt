@@ -363,7 +363,7 @@ class SplashActivity : BaseActivity() {
                     lastHotel = point
                     temp.add(point)
                     val tempPoints: ArrayList<Point> = ArrayList(temp)
-                    trip?.days?.add(Day("Day $dayNumber", tempPoints, false, null))
+                    trip?.days?.add(Day("יום $dayNumber", tempPoints, false, null))
                     temp?.clear()
                     dayNumber++
                 }

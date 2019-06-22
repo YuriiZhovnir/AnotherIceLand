@@ -85,14 +85,24 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
                         jdroidcoder.ua.anothericeland.network.response.Point(
                                 3, day.name,
                                 "", "", "", null, null, false,
-                                if (day.name == "Day 1") {
+                                if (day.name == "יום 1") {
                                     true
                                 } else {
                                     day.isDone
                                 }
                         )
                 )
-                points.addAll(day.points)
+                day?.points.forEach { p->
+//                    if (day.name == "יום 1") {
+//                        p.isDone = false
+//                    }else{
+//                        p.isDone = true
+//                    }
+                    if(!points.contains(p)) {
+                        points.add(p)
+                    }
+                }
+//                points.addAll(day.points)
             }
         }
         planList?.adapter = PlanAdapter(points, object : SheetListener {
