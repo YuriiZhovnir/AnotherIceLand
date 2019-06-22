@@ -9,8 +9,8 @@
         android:id="@+id/indicator"
         android:layout_width="16dp"
         android:layout_height="16dp"
-        android:scaleType="center"
         android:layout_marginTop="6dp"
+        android:scaleType="center"
         android:src="@drawable/ic_circle_day_empty" />
 
     <TextView
@@ -30,7 +30,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
-        android:layout_gravity="center_vertical" />
+        android:layout_gravity="center_vertical"
+        android:theme="@style/SwitchStyle" />
 
     <ImageView
         android:id="@+id/bottomLine"
