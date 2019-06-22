@@ -92,17 +92,11 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
                                 }
                         )
                 )
-                day?.points.forEach { p->
-//                    if (day.name == "יום 1") {
-//                        p.isDone = false
-//                    }else{
-//                        p.isDone = true
-//                    }
-                    if(!points.contains(p)) {
+                day?.points.forEach { p ->
+                    if (!points.contains(p)) {
                         points.add(p)
                     }
                 }
-//                points.addAll(day.points)
             }
         }
         planList?.adapter = PlanAdapter(points, object : SheetListener {
@@ -111,30 +105,22 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
                 for (day in GlobalData?.trip?.days!!) {
                     if (day?.points?.contains(point)) {
                         chosenDay = day
+                        break
                     }
+                }
+                chosenDay?.isDone = false
+                chosenDay?.points?.forEach {
+                    it.isDone = false
+                }
+                val previousDay = GlobalData.trip?.days?.firstOrNull { day -> day == GlobalData.currentDay }
+                previousDay?.isDone = true
+                previousDay?.points?.forEach {
+                    it.isDone = true
                 }
                 removeTempMarkers()
                 removeMarkers()
-                chosenDay?.points?.forEach {
-                    val iconFactory = IconFactory.getInstance(this@MapActivity)
-                    val icon = try {
-                        iconFactory.fromBitmap(
-                                Util.buildIcon(
-                                        this@MapActivity,
-                                        BitmapFactory.decodeFile(it?.image), R.drawable.ic_pin_grey
-                                )
-                        )
-                    } catch (ex: Exception) {
-                        ex.printStackTrace()
-                        null
-                    }
-                    if (it.lat != null && it.lng != null) {
-                        val temp = MarkerOptions()
-                                .position(it.lat?.let { it1 -> it.lng?.let { it2 -> LatLng(it1, it2) } })
-                                .setIcon(icon)
-                        tempMarkers.put(mapboxMap?.addMarker(temp), it)
-                    }
-                }
+                GlobalData.currentDay = chosenDay
+                setMarkers()
                 if (chosenDay != null) {
                     Handler().post {
                         navigationMapRoute?.removeRoute()
@@ -150,44 +136,6 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
             }
         }, object : ChangePointListener {
             override fun changePoint(point: jdroidcoder.ua.anothericeland.network.response.Point, isShow: Boolean) {
-                if (!isShow) {
-                    var tempMarker: Marker? = null
-                    for ((marker, tempPoint) in markers) {
-                        if (point == tempPoint) {
-                            tempMarker = marker
-                        }
-                    }
-                    tempMarker?.remove()
-                    markers?.remove(tempMarker)
-                } else {
-                    val iconFactory = IconFactory.getInstance(this@MapActivity)
-                    val pin = if (GlobalData.currentDay?.points?.contains(point) == true) {
-                        R.drawable.ic_pin_inactive
-                    } else {
-                        R.drawable.ic_pin_grey
-                    }
-                    val icon = try {
-                        iconFactory.fromBitmap(
-                                Util.buildIcon(
-                                        this@MapActivity,
-                                        BitmapFactory.decodeFile(point?.image), pin
-                                )
-                        )
-                    } catch (ex: Exception) {
-                        ex.printStackTrace()
-                        null
-                    }
-                    if (point.lat != null && point.lng != null) {
-                        val temp = MarkerOptions()
-                                .position(point.lat?.let { it1 -> point.lng?.let { it2 -> LatLng(it1, it2) } })
-                                .setIcon(icon)
-                        if (GlobalData.currentDay?.points?.contains(point) == true) {
-                            markers.put(mapboxMap?.addMarker(temp), point)
-                        } else {
-                            tempMarkers.put(mapboxMap?.addMarker(temp), point)
-                        }
-                    }
-                }
             }
 
         })
@@ -196,24 +144,40 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
                     bottomSheetHeader?.setBackgroundColor(Color.parseColor("#CCFFFFFF"))
-                    val newDay = GlobalData?.trip?.days?.firstOrNull { day -> !day.isDone }
-                    removeTempMarkers()
                     try {
                         style?.getSourceAs<GeoJsonSource>(OTHER_DAY_ROUTE_SOURCE_ID)
                                 ?.setGeoJson(FeatureCollection.fromFeatures(arrayOf()))
                     } catch (ex: Exception) {
                         ex.printStackTrace()
                     }
-                    removeMarkers()
-                    GlobalData.currentDay = newDay
-                    setNextPoint()
-                    drawFullRoute()
-                    setMarkers()
                     Thread {
                         GlobalData.trip?.let { Util.saveTrip(this@MapActivity, it) }
                     }.start()
                 } else {
                     bottomSheetHeader?.setBackgroundColor(Color.parseColor("#FFFFFF"))
+                    val temp = markers?.get(GlobalData.selectedMarker)
+                    if (temp != null) {
+                        val iconFactory = IconFactory.getInstance(this@MapActivity)
+                        val icon = try {
+                            iconFactory.fromBitmap(
+                                    Util.buildIcon(
+                                            this@MapActivity,
+                                            BitmapFactory.decodeFile(temp.image), R.drawable.ic_pin_inactive
+                                    )
+                            )
+                        } catch (ex: Exception) {
+                            ex.printStackTrace()
+                            null
+                        }
+                        GlobalData.selectedMarker?.icon = icon
+                        GlobalData.selectedMarker = null
+
+                    }
+                    if (bottom?.visibility == View.VISIBLE) {
+                        val anim = AnimationUtils.loadAnimation(this@MapActivity, R.anim.enter_to_down)
+                        bottom?.visibility = View.GONE
+                        bottom?.startAnimation(anim)
+                    }
                 }
             }
 
@@ -221,20 +185,23 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
             }
         })
         gpsDetector()
-        setNextPoint()
     }
 
     private fun removeMarkers() {
-        GlobalData.currentDay?.points?.forEach {
-            var tempMarker: Marker? = null
+//        GlobalData.currentDay?.points?.forEach {
+//            var tempMarker: Marker? = null
             for ((marker, tempPoint) in markers) {
-                if (it == tempPoint) {
-                    tempMarker = marker
-                }
+//                if (it == tempPoint) {
+//                    tempMarker = marker
+//                }
+                marker.remove()
+//                markers.remove(marker)
             }
-            tempMarker?.remove()
-            markers?.remove(tempMarker)
-        }
+        markers?.clear()
+//            tempMarker?.remove()
+//            markers?.remove(tempMarker)
+//        }
+
     }
 
     private fun removeTempMarkers() {
@@ -242,15 +209,6 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
             it.remove()
         }
         tempMarkers.clear()
-    }
-
-    private fun setNextPoint() {
-//        val currentItem = GlobalData?.trip?.points?.firstOrNull { point -> !point?.isDone && point?.typeId != 3 }
-//        if (currentItem == null) {
-//            bottomSheetTitle?.text = getString(R.string.trip_completed)
-//        } else {
-//            bottomSheetTitle?.text = currentItem?.name
-//        }
     }
 
     private fun initGpsService() {
@@ -268,7 +226,7 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
         removeTempMarkers()
         removeMarkers()
         GlobalData.trip?.points?.forEach {
-            if (!tempMarkers?.values?.contains(it)) {
+            if (!markers?.values?.contains(it)) {
                 val iconFactory = IconFactory.getInstance(this@MapActivity)
                 val icon = try {
                     iconFactory.fromBitmap(
@@ -285,7 +243,7 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
                     val temp = MarkerOptions()
                             .position(it.lat?.let { it1 -> it.lng?.let { it2 -> LatLng(it1, it2) } })
                             .setIcon(icon)
-                    tempMarkers.put(mapboxMap?.addMarker(temp), it)
+                    markers.put(mapboxMap?.addMarker(temp), it)
                 }
             }
         }
@@ -364,9 +322,6 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
     private fun setMarkers() {
         GlobalData.currentDay?.points?.let {
             for (point in it) {
-                if (point.isDone) {
-                    continue
-                }
                 val iconFactory = IconFactory.getInstance(this)
                 val icon = try {
                     iconFactory.fromBitmap(
@@ -389,16 +344,6 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
 
     @SuppressLint("StaticFieldLeak")
     private fun drawFullRoute() {
-//        object : AsyncTask<Void, Void, Boolean>() {
-//            override fun doInBackground(vararg params: Void?): Boolean {
-//                runOnUiThread {
-//        val handler = Handler()
-//        handler.postDelayed(object : Runnable {
-//            override fun run() {
-//                getScooters(false)
-//                handler.postDelayed(this, 60000)
-//            }
-//        }, 60000)
         Handler().post {
             if (GlobalData.currentDay != null) {
                 navigationMapRoute?.removeRoute()
@@ -409,39 +354,7 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
                 }
             }
         }
-
-//                }
-//                return true
-//            }
-
-//            override fun onPostExecute(result: Boolean?) {
-//                super.onPostExecute(result)
-//                drawCurrentRoute()
-//            }
-//        }.execute()
     }
-
-//    private fun drawCurrentRoute() {
-//        val geometrics: MutableList<Feature> = ArrayList()
-//        val currentDay = GlobalData?.trip?.days?.firstOrNull { day -> !day.isDone }
-//        if (currentDay != null) {
-//            currentDay?.direction?.legs()?.let {
-//                for (leg in it) {
-//                    if (leg?.steps()?.isNullOrEmpty() == false) {
-//                        for (step in leg.steps()!!)
-//                            geometrics?.add(Feature.fromGeometry(step.geometry()?.let { it1 ->
-//                                LineString.fromPolyline(
-//                                        it1,
-//                                        PRECISION_6
-//                                )
-//                            }))
-//                    }
-//                }
-//            }
-//            style?.getSourceAs<GeoJsonSource>(CURRENT_ROUTE_SOURCE_ID)
-//                    ?.setGeoJson(FeatureCollection.fromFeatures(geometrics))
-//        }
-//    }
 
     private fun initSource(loadedMapStyle: Style) {
         loadedMapStyle?.addSource(
@@ -544,6 +457,7 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
             }
             GlobalData.selectedMarker?.icon = icon
             GlobalData.selectedMarker = null
+
         }
         if (bottom?.visibility == View.VISIBLE) {
             val anim = AnimationUtils.loadAnimation(this, R.anim.enter_to_down)

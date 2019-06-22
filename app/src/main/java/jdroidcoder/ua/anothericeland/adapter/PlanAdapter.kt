@@ -32,21 +32,21 @@ class PlanAdapter(
         val item = items?.get(position)
         holder.title.text = item.name
         if (item?.typeId == 3) {
-            holder?.dayIsDone?.visibility = View.GONE
+//            holder?.dayIsDone?.visibility = View.GONE
             val typeface = context?.let { ResourcesCompat.getFont(it, R.font.montserrat_bold) }
             holder.title.typeface = typeface
             holder.title.setTextColor(Color.parseColor("#0097DA"))
             holder.title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
             holder.title.setPadding(0, 0, 0, 0)
-            if (!item.isDone) {
-                holder.indicator?.setImageResource(R.drawable.ic_circle_day_empty)
-            } else {
+//            if (!item.isDone) {
+//                holder.indicator?.setImageResource(R.drawable.ic_circle_day_empty)
+//            } else {
                 holder.indicator?.setImageResource(R.drawable.ic_circle_day_full)
-            }
+//            }
         } else {
             val typeface = context?.let { ResourcesCompat.getFont(it, R.font.montserrat_medium) }
             holder.title.typeface = typeface
-            holder?.dayIsDone?.visibility = View.VISIBLE
+//            holder?.dayIsDone?.visibility = View.VISIBLE
             holder?.dayIsDone?.setOnCheckedChangeListener(null)
             holder?.dayIsDone?.isChecked = item.isDone == false
             holder?.dayIsDone?.setOnCheckedChangeListener { buttonView, isChecked ->
@@ -61,25 +61,25 @@ class PlanAdapter(
                         day.isDone = temp == null
                     }
                 }
-                if (isChecked) {
-                    holder.title.setTextColor(Color.parseColor("#8D8D8D"))
-                    holder.indicator?.setImageResource(R.drawable.ic_circle_point_empty)
-                } else {
+//                if (isChecked) {
+//                    holder.title.setTextColor(Color.parseColor("#8D8D8D"))
+//                    holder.indicator?.setImageResource(R.drawable.ic_circle_point_empty)
+//                } else {
                     holder.title.setTextColor(Color.parseColor("#333333"))
                     holder.indicator?.setImageResource(R.drawable.ic_circle_point_full)
-                }
+//                }
                 items?.get(position).isDone = isChecked == false
                 changePointListener?.changePoint(item, isChecked)
             }
             context?.resources?.getDimension(R.dimen.padding_2)?.toInt()?.let { holder.title.setPadding(it, 0, 0, 0) }
             holder.title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
-            if (!item.isDone) {
-                holder.title.setTextColor(Color.parseColor("#8D8D8D"))
-                holder.indicator?.setImageResource(R.drawable.ic_circle_point_empty)
-            } else {
+//            if (!item.isDone) {
+//                holder.title.setTextColor(Color.parseColor("#8D8D8D"))
+//                holder.indicator?.setImageResource(R.drawable.ic_circle_point_empty)
+//            } else {
                 holder.title.setTextColor(Color.parseColor("#333333"))
                 holder.indicator?.setImageResource(R.drawable.ic_circle_point_full)
-            }
+//            }
         }
         if (position < items.count() - 1) {
             holder.bottomLine?.visibility = View.VISIBLE
@@ -87,7 +87,7 @@ class PlanAdapter(
             holder.bottomLine?.visibility = View.INVISIBLE
         }
         holder.item?.setOnClickListener {
-            if (item.name?.contains("Day") == true) {
+            if (item.name?.contains("יום") == true) {
                 listener?.dayChosen(items?.get(position + 1))
             } else {
                 listener?.dayChosen(item)
