@@ -35,6 +35,7 @@
                 android:layout_height="wrap_content"
                 android:drawableTop="@drawable/ic_decore_line"
                 android:drawablePadding="9dp"
+                android:text="@string/my_itinerary"
                 android:fontFamily="@font/montserrat_medium"
                 android:gravity="center"
                 android:textColor="#333333" />

@@ -235,6 +235,8 @@ class SplashActivity : BaseActivity() {
                             if (dayCount >= trip?.days?.count()) {
                                 GlobalData.trip = trip
                                 getRoute()
+                            }else{
+                                getDayRoutes(dayCount)
                             }
                             return
                         } else if (response.body()?.routes()?.size!! < 1) {
@@ -242,6 +244,8 @@ class SplashActivity : BaseActivity() {
                             if (dayCount >= trip?.days?.count()) {
                                 GlobalData.trip = trip
                                 getRoute()
+                            }else{
+                                getDayRoutes(dayCount)
                             }
                             return
                         }
@@ -253,6 +257,7 @@ class SplashActivity : BaseActivity() {
                             runOnUiThread {
                                 status?.text = getString(R.string.yet_not_much)
                             }
+                            GlobalData.currentDay = GlobalData?.trip?.days?.firstOrNull { day-> !day.isDone }
                             getRoute()
                         } else {
                             getDayRoutes(dayCount)
@@ -314,7 +319,7 @@ class SplashActivity : BaseActivity() {
                             runOnUiThread {
                                 status?.text = getString(R.string.saving_data)
                             }
-                            GlobalData.directionsRoute = currentRoute
+//                            GlobalData.directionsRoute = currentRoute
                             Util.saveRoute(this@SplashActivity, currentRoute)
                             Util.saveTrip(this@SplashActivity, trip)
                             startActivity(Intent(this@SplashActivity, MapActivity::class.java))

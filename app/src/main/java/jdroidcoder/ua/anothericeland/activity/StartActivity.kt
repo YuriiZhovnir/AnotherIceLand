@@ -21,7 +21,8 @@ class StartActivity : BaseActivity() {
         Thread {
             GlobalData?.trip = Util.getTrip(this)
             if (GlobalData.trip != null) {
-                GlobalData.directionsRoute = Util.loadRoute(this@StartActivity)
+                GlobalData.currentDay = GlobalData?.trip?.days?.firstOrNull { day-> !day.isDone }
+//                GlobalData.directionsRoute = Util.loadRoute(this@StartActivity)
                 startActivity(Intent(this, MapActivity::class.java))
                 finish()
             } else {

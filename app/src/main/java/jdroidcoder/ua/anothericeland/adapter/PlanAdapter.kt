@@ -13,7 +13,10 @@ import jdroidcoder.ua.anothericeland.helper.GlobalData
 import jdroidcoder.ua.anothericeland.network.response.Point
 import kotlinx.android.synthetic.main.plain_item_style.view.*
 
-class PlanAdapter(var items: ArrayList<Point> = ArrayList(), var listener: SheetListener? = null) : RecyclerView.Adapter<PlanAdapter.ViewHolder>() {
+class PlanAdapter(
+    var items: ArrayList<Point> = ArrayList(), var listener: SheetListener? = null,
+    var changePointListener: ChangePointListener? = null
+) : RecyclerView.Adapter<PlanAdapter.ViewHolder>() {
     private var context: Context? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -44,7 +47,30 @@ class PlanAdapter(var items: ArrayList<Point> = ArrayList(), var listener: Sheet
             val typeface = context?.let { ResourcesCompat.getFont(it, R.font.montserrat_medium) }
             holder.title.typeface = typeface
             holder?.dayIsDone?.visibility = View.VISIBLE
-            holder?.dayIsDone?.isChecked = item.isDone
+            holder?.dayIsDone?.setOnCheckedChangeListener(null)
+            holder?.dayIsDone?.isChecked = item.isDone == false
+            holder?.dayIsDone?.setOnCheckedChangeListener { buttonView, isChecked ->
+                GlobalData?.trip?.days?.let {
+                    for (day in it) {
+                        for (point in day.points) {
+                            if (point == item) {
+                                point.isDone = isChecked == false
+                            }
+                        }
+                        val temp = day.points?.firstOrNull { p -> !p.isDone }
+                        day.isDone = temp == null
+                    }
+                }
+                if (isChecked) {
+                    holder.title.setTextColor(Color.parseColor("#8D8D8D"))
+                    holder.indicator?.setImageResource(R.drawable.ic_circle_point_empty)
+                } else {
+                    holder.title.setTextColor(Color.parseColor("#333333"))
+                    holder.indicator?.setImageResource(R.drawable.ic_circle_point_full)
+                }
+                items?.get(position).isDone = isChecked == false
+                changePointListener?.changePoint(item, isChecked)
+            }
             context?.resources?.getDimension(R.dimen.padding_2)?.toInt()?.let { holder.title.setPadding(it, 0, 0, 0) }
             holder.title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
             if (!item.isDone) {
@@ -67,27 +93,6 @@ class PlanAdapter(var items: ArrayList<Point> = ArrayList(), var listener: Sheet
                 listener?.dayChosen(item)
             }
         }
-        holder?.dayIsDone?.setOnCheckedChangeListener { buttonView, isChecked ->
-            GlobalData?.trip?.days?.let {
-                for (day in it) {
-                    for (point in day.points) {
-                        if (point == item) {
-                            point.isDone = isChecked
-                            if (point == day?.points?.last()) {
-                                day.isDone = isChecked
-                            }
-                        }
-                    }
-                }
-            }
-            if (!isChecked) {
-                holder.title.setTextColor(Color.parseColor("#8D8D8D"))
-                holder.indicator?.setImageResource(R.drawable.ic_circle_point_empty)
-            } else {
-                holder.title.setTextColor(Color.parseColor("#333333"))
-                holder.indicator?.setImageResource(R.drawable.ic_circle_point_full)
-            }
-        }
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -101,4 +106,8 @@ class PlanAdapter(var items: ArrayList<Point> = ArrayList(), var listener: Sheet
 
 interface SheetListener {
     fun dayChosen(point: Point)
+}
+
+interface ChangePointListener {
+    fun changePoint(point: Point, isShow: Boolean)
 }
