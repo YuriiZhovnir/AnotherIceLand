@@ -433,8 +433,8 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
             lineCap(Property.LINE_CAP_ROUND),
             lineJoin(Property.LINE_JOIN_ROUND),
             lineWidth(12f),
-            PropertyFactory.fillOutlineColor("#008577"),
-            lineColor(Color.parseColor("#008577"))
+            PropertyFactory.fillOutlineColor("#008000"),
+            lineColor(Color.parseColor("#008000"))
         )
         loadedMapStyle.addLayerBelow(routeLayer, "com.mapbox.annotations.points")
     }
