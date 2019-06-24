@@ -1,7 +1,10 @@
 package jdroidcoder.ua.anothericeland.fragment
 
+import android.os.Build
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.text.Html
+import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -47,8 +50,21 @@ class DetailsFragment : Fragment() {
         } catch (ex: Exception) {
             ex.printStackTrace()
         }
-        locationName?.text = pointDetails?.name
-        description?.text = pointDetails?.description
+
+        locationName?.text = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            Html.fromHtml(pointDetails?.name, Html.FROM_HTML_MODE_COMPACT)
+        } else {
+            Html.fromHtml(pointDetails?.name)
+        }
+        description?.text = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            Html.fromHtml(pointDetails?.description, Html.FROM_HTML_MODE_COMPACT)
+        } else {
+            Html.fromHtml(pointDetails?.description)
+        }
+        description.movementMethod = LinkMovementMethod.getInstance()
+        locationName.movementMethod = LinkMovementMethod.getInstance()
+//        locationName?.text = pointDetails?.name
+//        description?.text = pointDetails?.description
         if (pointDetails?.isHotel == true) {
             phonesContainer?.visibility = View.VISIBLE
             phones?.text = pointDetails?.phone

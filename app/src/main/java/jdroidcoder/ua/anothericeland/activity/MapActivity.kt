@@ -9,6 +9,7 @@ import android.graphics.Color
 import android.graphics.Point
 import android.location.GpsStatus
 import android.location.LocationManager
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.support.v7.widget.LinearLayoutManager
@@ -21,6 +22,8 @@ import kotlinx.android.synthetic.main.bottom_sheet.*
 import android.support.design.widget.BottomSheetBehavior
 import android.support.design.widget.BottomSheetBehavior.BottomSheetCallback
 import android.support.v4.app.ActivityCompat
+import android.text.Html
+import android.text.method.LinkMovementMethod
 import android.view.View
 import android.view.animation.AnimationUtils
 import android.widget.LinearLayout
@@ -232,7 +235,7 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
                     iconFactory.fromBitmap(
                             Util.buildIcon(
                                     this@MapActivity,
-                                    BitmapFactory.decodeFile(it?.image), R.drawable.ic_pin_grey
+                                    BitmapFactory.decodeFile(it?.image), R.drawable.ic_pin_inactive
                             )
                     )
                 } catch (ex: Exception) {
@@ -430,7 +433,16 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
             if (temp.image?.isNullOrEmpty() == false)
                 Picasso.get().load(File(temp.image)).into(locationImage)
             locationName?.text = temp.name
-            locationShortDescription?.text = temp.description
+            if(temp?.description?.isNullOrEmpty() == false)
+                locationShortDescription?.text = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    Html.fromHtml(temp?.description, Html.FROM_HTML_MODE_COMPACT)
+                }else{
+                    Html.fromHtml(temp?.description)
+                }
+            locationShortDescription.movementMethod = LinkMovementMethod.getInstance()
+//            locationName.movementMethod = LinkMovementMethod.getInstance()
+
+//                locationShortDescription?.text = temp.description
             if (bottom?.visibility == View.GONE) {
                 val anim = AnimationUtils.loadAnimation(this, R.anim.enter_to_up)
                 bottom?.visibility = View.VISIBLE
