@@ -18,5 +18,6 @@
     <string name="my_itinerary">המסלול שלי</string>
     <string name="show_me_my_trip">הצג מסלול מלא על מפהי</string>
     <string name="hide_me_my_trip">הסתר מסלול</string>
+    <string name="start_navigation">Start Navigation</string>
 
 </resources>

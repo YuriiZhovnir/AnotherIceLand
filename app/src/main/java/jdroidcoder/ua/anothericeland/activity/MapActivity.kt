@@ -41,6 +41,8 @@ import com.mapbox.mapboxsdk.location.modes.RenderMode
 import com.mapbox.mapboxsdk.style.layers.*
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.*
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
+import com.mapbox.services.android.navigation.ui.v5.NavigationLauncher
+import com.mapbox.services.android.navigation.ui.v5.NavigationLauncherOptions
 import com.mapbox.services.android.navigation.ui.v5.route.NavigationMapRoute
 import com.squareup.picasso.Picasso
 import jdroidcoder.ua.anothericeland.adapter.ChangePointListener
@@ -190,16 +192,30 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
         gpsDetector()
     }
 
+    @OnClick(R.id.startNavigation)
+    fun startNavigation() {
+        try {
+            val simulateRoute = false
+            val options = NavigationLauncherOptions.builder()
+                    .directionsRoute(GlobalData.currentDay?.direction)
+                    .shouldSimulateRoute(simulateRoute)
+                    .build()
+            NavigationLauncher.startNavigation(this@MapActivity, options)
+        }catch (ex:Exception){
+            ex.printStackTrace()
+        }
+    }
+
     private fun removeMarkers() {
 //        GlobalData.currentDay?.points?.forEach {
 //            var tempMarker: Marker? = null
-            for ((marker, tempPoint) in markers) {
+        for ((marker, tempPoint) in markers) {
 //                if (it == tempPoint) {
 //                    tempMarker = marker
 //                }
-                marker.remove()
+            marker.remove()
 //                markers.remove(marker)
-            }
+        }
         markers?.clear()
 //            tempMarker?.remove()
 //            markers?.remove(tempMarker)
@@ -433,10 +449,10 @@ class MapActivity : BaseActivity(), OnMapReadyCallback, MapboxMap.OnMarkerClickL
             if (temp.image?.isNullOrEmpty() == false)
                 Picasso.get().load(File(temp.image)).into(locationImage)
             locationName?.text = temp.name
-            if(temp?.description?.isNullOrEmpty() == false)
+            if (temp?.description?.isNullOrEmpty() == false)
                 locationShortDescription?.text = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     Html.fromHtml(temp?.description, Html.FROM_HTML_MODE_COMPACT)
-                }else{
+                } else {
                     Html.fromHtml(temp?.description)
                 }
             locationShortDescription.movementMethod = LinkMovementMethod.getInstance()
