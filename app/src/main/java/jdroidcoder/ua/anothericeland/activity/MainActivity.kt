@@ -8,7 +8,6 @@ import butterknife.ButterKnife
 import butterknife.OnClick
 import jdroidcoder.ua.anothericeland.R
 import jdroidcoder.ua.anothericeland.helper.GlobalData
-import jdroidcoder.ua.anothericeland.helper.Util
 import kotlinx.android.synthetic.main.activity_main.*
 import java.lang.Exception
 

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
@@ -20,9 +21,9 @@ import java.lang.Exception
 
 class GPServices(private var context: AppCompatActivity) : GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
-//    companion object {
-//        var location: Location? = null
-//    }
+    companion object {
+        var location: Location? = null
+    }
 
     private var mGoogleApiClient: GoogleApiClient? = null
     private var mLocationRequest: LocationRequest? = null
@@ -92,8 +93,7 @@ class GPServices(private var context: AppCompatActivity) : GoogleApiClient.Conne
         getFusedLocationProviderClient(context).requestLocationUpdates(mLocationRequest, object : LocationCallback() {
 
             override fun onLocationResult(locationResult: LocationResult) {
-//                location = locationResult?.locations?.get(0)
-//                println("dsa")
+                location = locationResult?.locations?.get(0)
             }
         }, Looper.myLooper())
     }

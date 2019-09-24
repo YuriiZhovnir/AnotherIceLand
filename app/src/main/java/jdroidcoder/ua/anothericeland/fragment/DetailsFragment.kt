@@ -56,10 +56,12 @@ class DetailsFragment : Fragment() {
         } else {
             Html.fromHtml(pointDetails?.name)
         }
+        pointDetails?.description?.let{
         description?.text = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            Html.fromHtml(pointDetails?.description, Html.FROM_HTML_MODE_COMPACT)
-        } else {
-            Html.fromHtml(pointDetails?.description)
+                Html.fromHtml(it, Html.FROM_HTML_MODE_COMPACT)
+            } else {
+                Html.fromHtml(it)
+            }
         }
         description.movementMethod = LinkMovementMethod.getInstance()
         locationName.movementMethod = LinkMovementMethod.getInstance()
