@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_marginTop="24dp"
     android:background="@android:color/white"
     android:orientation="vertical">
 
@@ -27,23 +28,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="250dp"
                 android:layout_margin="16dp"
-                android:scaleType="centerCrop"/>
-
-            <TextView
-                android:id="@+id/locationName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/locationImage"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:longClickable="true"
-                android:linksClickable="true"
-                android:layout_marginEnd="16dp"
-                android:fontFamily="@font/montserrat_medium"
-                android:textColor="#333333"
-                android:textSize="24sp" />
+                android:scaleType="centerCrop" />
 
             <ImageView
                 android:id="@+id/decore_line"
@@ -54,25 +39,6 @@
                 android:layout_alignEnd="@id/locationName"
                 android:layout_marginTop="17dp"
                 android:src="#6A6A6A" />
-
-            <TextView
-                android:id="@+id/description"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/decore_line"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="32dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="16dp"
-                android:fontFamily="@font/montserrat_regular"
-                android:lineSpacingExtra="1dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:longClickable="true"
-                android:linksClickable="true"
-                android:lineSpacingMultiplier="1.5"
-                android:textColor="#333333"
-                android:textSize="12sp" />
 
             <LinearLayout
                 android:id="@+id/phonesContainer"
@@ -101,12 +67,49 @@
                     android:layout_marginTop="10dp"
                     android:clickable="true"
                     android:focusable="true"
-                    android:longClickable="true"
-                    android:linksClickable="true"
                     android:fontFamily="@font/montserrat_regular"
+                    android:linksClickable="true"
+                    android:longClickable="true"
                     android:textColor="#333333"
                     android:textSize="14sp" />
             </LinearLayout>
+
+            <TextView
+                android:id="@+id/description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/decore_line"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:fontFamily="@font/montserrat_regular"
+                android:lineSpacingExtra="1dp"
+                android:lineSpacingMultiplier="1.5"
+                android:linksClickable="true"
+                android:longClickable="true"
+                android:textColor="#333333"
+                android:textColorLink="@color/blue"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/locationName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/locationImage"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:autoLink="all"
+                android:clickable="true"
+                android:focusable="true"
+                android:fontFamily="@font/montserrat_medium"
+                android:linksClickable="true"
+                android:longClickable="true"
+                android:textColor="#333333"
+                android:textSize="24sp" />
         </RelativeLayout>
     </android.support.v4.widget.NestedScrollView>
 </LinearLayout>

@@ -61,7 +61,7 @@ class GPServices(private var context: AppCompatActivity) : GoogleApiClient.Conne
 
     private fun displayNoLocationProviderDialog() {
         try {
-            AlertDialog.Builder(context)
+            AlertDialog.Builder(context,R.style.AlertDialogTheme)
                     .setMessage(context?.resources?.getString(R.string.need_turn_on_gps))
                     .setPositiveButton(context?.resources?.getString(R.string.turn_on_gps)) { dialog, which ->
                         context.startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))

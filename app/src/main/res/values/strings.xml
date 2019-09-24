@@ -21,5 +21,25 @@
     <string name="start_navigation">Start Navigation</string>
     <string name="take_me_ther">קחו אותי לנקודה</string>
     <string name="full_itineray">מסלול מלא</string>
-
+    <string name="navigation_drawer_open">open</string>
+    <string name="navigation_drawer_close">close</string>
+    <string name="important_info">מספרי חירום</string>
+    <string name="important_text_info">
+        <h2>מספרי חירום</h2>
+        <p>מוקד טלפוני 24/7 למקרי חירום : 354-8936115</p>
+        <p>משטרה / אמבולנס / מכבי אש חייגו 102</p>
+        <H2>מידע חשוב</H2>
+        <p>ביקור בכל האתרים והפעילויות המוזכרים בתכנית הטיול תלויים במז האוויר. מומלץ לברר את תנאי מזג האוויר והדרכים בתחילת כל יום לפני היציאה לדרך. </p>
+        <p>לאתר תחזית מזג האויר: <a href="http://en.vedur.is/">en.vedur.is</a></p>
+        <p>מידע על נהיגה בטוחה באיסלנד: <a href="http://www.safetravel.is/En/">safetravel.is</a></p>
+        <p>עדכון חי על מצב הכבישים והדרכים: <a href="http://www.road.is">www.road.is</a></p>
+        דרך צלחה!
+    </string>
+    <string name="lagunes_title">הלגונות של איסלנד</string>
+    <string name="lagunes_url">\"https://www.icelandlagoons.com/"\</string>
+    <string name="internet_alert_checked_title">Checked your connect internet</string>
+    <string name="no_location_alert_message">Your location not found</string>
+    <string name="re_try">re-try</string>
+    <string name="cancel">cancel</string>
+    <string name="gps_alert_checked_title">Check your access GPS</string>
 </resources>

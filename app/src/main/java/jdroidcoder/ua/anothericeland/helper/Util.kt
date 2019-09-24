@@ -53,7 +53,7 @@ object Util {
         return type == 2
     }
 
-    fun saveTrip(context: Context, trip: Trip) {
+    fun saveTrip(context: Context, trip: Trip?) {
         try {
             val fos = context.openFileOutput("trip_file", Context.MODE_PRIVATE)
             val os = ObjectOutputStream(fos)
